@@ -1,0 +1,2675 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Amik.cc.cd</title>
+    <script src="js/common.js"></script>
+    <script>
+        // 立即初始化主题和语言，避免页面闪烁
+        (function() {
+            // 检测localStorage可用性
+            function isLocalStorageAvailable() {
+                try {
+                    const test = 'test';
+                    localStorage.setItem(test, test);
+                    localStorage.removeItem(test);
+                    return true;
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            // 安全地获取localStorage值
+            function getLocalStorage(key, defaultValue) {
+                if (isLocalStorageAvailable()) {
+                    return localStorage.getItem(key) || defaultValue;
+                }
+                return defaultValue;
+            }
+
+            // 应用主题设置
+            function applyTheme() {
+                const savedTheme = getLocalStorage('theme', 'light');
+                let isDark = false;
+                
+                if (savedTheme === 'light') {
+                    document.documentElement.dataset.theme = 'light';
+                } else if (savedTheme === 'dark') {
+                    document.documentElement.dataset.theme = 'dark';
+                    isDark = true;
+                } else if (savedTheme === 'system') {
+                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    document.documentElement.dataset.theme = prefersDark ? 'dark' : 'light';
+                    isDark = prefersDark;
+                }
+                
+                // 设置主题图标状态
+                document.documentElement.style.setProperty('--theme-icon', isDark ? 'dark' : 'light');
+            }
+
+            // 应用语言设置
+            function applyLanguage() {
+                const savedLanguage = getLocalStorage('language', 'zh-CN');
+                // 设置语言属性，用于CSS选择器和初始内容显示
+                document.documentElement.setAttribute('lang', savedLanguage);
+                // 预加载语言内容，避免闪烁
+                applyLanguageContent(savedLanguage);
+            }
+            
+            // 预加载语言内容
+            function applyLanguageContent(lang) {
+                const elements = {
+                    'zh-CN': {
+                        'welcomeLeft': '欢迎来到',
+                        'welcomeRight': '主页！',
+                        'aboutMe': '关于我',
+                        'jobTitle': 'Web Developer & Designer',
+                        'aboutDesc1': 'Hello! 我是Amik，一名热爱技术的全栈开发工程师。我专注于创建美观、高效的网站和应用程序，拥有丰富的前端和后端开发经验。',
+                        'aboutDesc2': '我热爱解决问题，不断学习新技术，并且善于团队合作。我的目标是通过技术创造有价值的产品，为用户提供优质的体验。',
+                        'mySkills': '我的技能',
+                        'frontend': '前端开发',
+                        'backend': '后端开发',
+                        'otherSkills': '其他技能',
+                        'myProjects': '我的项目',
+                        'projectName1': '项目名称 1',
+                        'projectDesc1': '这是一个项目描述，介绍项目的功能和特点。',
+                        'viewDetails': '查看详情',
+                        'projectName2': '项目名称 2',
+                        'projectDesc2': '这是一个项目描述，介绍项目的功能和特点。',
+                        'projectName3': '项目名称 3',
+                        'projectDesc3': '这是一个项目描述，介绍项目的功能和特点。',
+                        'contactMe': '联系我',
+                        'contactDesc': '如果您对我的工作感兴趣，或者有任何问题，欢迎随时联系我！',
+                        'about': '关于',
+                        'works': '作品',
+                        'notes': '笔记',
+                        'settings': '设置'
+                    },
+                    'en-US': {
+                        'welcomeLeft': 'Welcome to',
+                        'welcomeRight': 'Homepage!',
+                        'aboutMe': 'About Me',
+                        'jobTitle': 'Web Developer & Designer',
+                        'aboutDesc1': 'Hello! I am Amik, a full-stack development engineer passionate about technology. I focus on creating beautiful, efficient websites and applications, with extensive experience in both frontend and backend development.',
+                        'aboutDesc2': 'I love solving problems, constantly learning new technologies, and excel at teamwork. My goal is to create valuable products through technology and provide users with excellent experiences.',
+                        'mySkills': 'My Skills',
+                        'frontend': 'Frontend Development',
+                        'backend': 'Backend Development',
+                        'otherSkills': 'Other Skills',
+                        'myProjects': 'My Projects',
+                        'projectName1': 'Project Name 1',
+                        'projectDesc1': 'This is a project description, introducing the features and characteristics of the project.',
+                        'viewDetails': 'View Details',
+                        'projectName2': 'Project Name 2',
+                        'projectDesc2': 'This is a project description, introducing the features and characteristics of the project.',
+                        'projectName3': 'Project Name 3',
+                        'projectDesc3': 'This is a project description, introducing the features and characteristics of the project.',
+                        'contactMe': 'Contact Me',
+                        'contactDesc': 'If you are interested in my work or have any questions, please feel free to contact me!',
+                        'about': 'About',
+                        'works': 'Works',
+                        'notes': 'Notes',
+                        'settings': 'Settings'
+                    }
+                };
+                
+                // 将语言内容存储在全局变量中，供页面加载时使用
+                window.preloadedLanguage = elements[lang];
+                window.preloadedLang = lang;
+            }
+
+            // 应用字体大小设置
+            function applyFontSize() {
+                const savedFontSize = getLocalStorage('fontSize', '16');
+                document.documentElement.style.fontSize = savedFontSize + 'px';
+            }
+
+            // 应用底边栏状态设置
+            function applyFooterState() {
+                // 检查底部栏默认展开设置和当前状态
+                const footerDefault = getLocalStorage('footerDefault', 'true') === 'true';
+                const savedFooterVisible = getLocalStorage('footerVisible', footerDefault ? 'true' : 'false') === 'true';
+                
+                // 这里只设置CSS变量，具体的DOM操作由initFooterState()处理
+                // 这样可以在页面渲染前设置好基础样式
+                document.documentElement.style.setProperty('--footer-visible', savedFooterVisible ? 'true' : 'false');
+            }
+
+            // 立即应用主题、语言、字体大小和底边栏状态
+            applyTheme();
+            applyLanguage();
+            applyFontSize();
+            applyFooterState();
+        })();
+
+    </script>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 高DPI屏幕支持 */
+        @media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi) {
+            .social-btn svg {
+                width: 24px;
+                height: 24px;
+            }
+        }
+
+        /* 修复高DPI屏幕上的模糊问题 */
+        .logo, .nav-btn, .social-btn, .theme-toggle, .footer-toggle {
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-perspective: 1000;
+            perspective: 1000;
+        }
+
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #222222;
+            --accent-color: #000000;
+            --footer-bg: #000000;
+            --footer-text: #ffffff;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --accent-color: #ffffff;
+            --footer-bg: #000000;
+            --footer-text: #ffffff;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            background-color: #ffffff;
+            background-color: var(--bg-color);
+            color: #222222;
+            color: var(--text-color);
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            overflow-x: hidden;
+            padding-top: 80px;
+            padding-bottom: 80px;
+            -webkit-transition: background-color 0.0s, color 0.0s;
+            -moz-transition: background-color 0.0s, color 0.0s;
+            -o-transition: background-color 0.0s, color 0.0s;
+            transition: background-color 0.0s, color 0.0s;
+            /* 性能优化 */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        /* 性能优化：硬件加速 */
+        .logo, .nav-btn, .social-btn, .theme-toggle, .footer-toggle, .theme-mask {
+            -webkit-transform: translateZ(0);
+            -moz-transform: translateZ(0);
+            -ms-transform: translateZ(0);
+            -o-transform: translateZ(0);
+            transform: translateZ(0);
+        }
+
+        .theme-mask {
+            position: fixed;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background-color: #000000;
+            background-color: var(--accent-color);
+            z-index: 9999;
+            pointer-events: none;
+            -webkit-transform: translate(-50%, -50%) scale(0);
+            -moz-transform: translate(-50%, -50%) scale(0);
+            -ms-transform: translate(-50%, -50%) scale(0);
+            -o-transform: translate(-50%, -50%) scale(0);
+            transform: translate(-50%, -50%) scale(0);
+            -webkit-transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+            -moz-transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+            -o-transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+            opacity: 0.18;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #ffffff;
+            background-color: var(--bg-color);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 100;
+            opacity: 0;
+            -webkit-transform: translateY(-30px) scaleY(0.9);
+            -moz-transform: translateY(-30px) scaleY(0.9);
+            -ms-transform: translateY(-30px) scaleY(0.9);
+            -o-transform: translateY(-30px) scaleY(0.9);
+            transform: translateY(-30px) scaleY(0.9);
+            -webkit-transition: opacity 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+            -moz-transition: opacity 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+            -o-transition: opacity 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: opacity 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+            pointer-events: none;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #222222;
+            color: var(--text-color);
+            cursor: pointer;
+            text-decoration: none;
+            user-select: none;
+            margin-right: 30px;
+            position: relative;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: end;
+            -ms-flex-align: end;
+            align-items: flex-end;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+
+        .logo:active {
+            -webkit-transform: scale(0.95) translateZ(0);
+            -moz-transform: scale(0.95) translateZ(0);
+            -ms-transform: scale(0.95) translateZ(0);
+            -o-transform: scale(0.95) translateZ(0);
+            transform: scale(0.95) translateZ(0);
+        }
+
+        .logo-main {
+            font-size: 1.5rem;
+        }
+
+        .logo-suffix {
+            font-size: 0.75rem;
+            margin-left: 2px;
+            margin-bottom: 3px;
+            color: #666;
+        }
+
+        .logo:hover {
+            -webkit-transform: scale(1.05) translateZ(0);
+            -moz-transform: scale(1.05) translateZ(0);
+            -ms-transform: scale(1.05) translateZ(0);
+            -o-transform: scale(1.05) translateZ(0);
+            transform: scale(1.05) translateZ(0);
+        }
+
+        .nav-links {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            gap: 0;
+            position: relative;
+        }
+
+        .nav-btn {
+            padding: 0 20px;
+            height: 60px;
+            line-height: 60px;
+            font-size: 1rem;
+            color: #222222;
+            color: var(--text-color);
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            border: none;
+            background: transparent;
+            opacity: 0;
+            -webkit-transform: translateY(25px) scale(0.9);
+            -moz-transform: translateY(25px) scale(0.9);
+            -ms-transform: translateY(25px) scale(0.9);
+            -o-transform: translateY(25px) scale(0.9);
+            transform: translateY(25px) scale(0.9);
+            -webkit-transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            -moz-transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            -o-transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            pointer-events: none;
+        }
+
+        .nav-btn:active {
+            -webkit-transform: scale(0.95) translateZ(0);
+            -moz-transform: scale(0.95) translateZ(0);
+            -ms-transform: scale(0.95) translateZ(0);
+            -o-transform: scale(0.95) translateZ(0);
+            transform: scale(0.95) translateZ(0);
+        }
+
+        .nav-btn.show {
+            opacity: 1;
+            -webkit-transform: translateY(0) scale(1);
+            -moz-transform: translateY(0) scale(1);
+            -ms-transform: translateY(0) scale(1);
+            -o-transform: translateY(0) scale(1);
+            transform: translateY(0) scale(1);
+        }
+
+        .nav-btn:hover {
+            -webkit-transform: scale(1.08) translateZ(0);
+            -moz-transform: scale(1.08) translateZ(0);
+            -ms-transform: scale(1.08) translateZ(0);
+            -o-transform: scale(1.08) translateZ(0);
+            transform: scale(1.08) translateZ(0); /* 修复文字糊 */
+        }
+
+        /* 电脑端指示线加粗 */
+        .nav-indicator {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background-color: #000000;
+            background-color: var(--accent-color);
+            border-radius: 3px 3px 0 0;
+            -webkit-transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            -moz-transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            -o-transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        @media (min-width: 769px) {
+            .nav-indicator {
+                height: 4px;
+                border-radius: 4px 4px 0 0;
+            }
+        }
+
+
+
+        .language-toggle {
+            position: fixed;
+            top: -50px;
+            right: 60px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #000000;
+            background-color: var(--accent-color);
+            color: #ffffff;
+            color: var(--bg-color);
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            z-index: 101;
+            opacity: 0;
+            -webkit-transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            -moz-transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            -o-transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            pointer-events: none;
+        }
+
+        .language-toggle.visible {
+            top: 15px;
+            opacity: 1;
+        }
+
+        .language-toggle:active {
+            -webkit-transform: scale(0.9) translateZ(0);
+            -moz-transform: scale(0.9) translateZ(0);
+            -ms-transform: scale(0.9) translateZ(0);
+            -o-transform: scale(0.9) translateZ(0);
+            transform: scale(0.9) translateZ(0);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: -50px;
+            right: 20px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #000000;
+            background-color: var(--accent-color);
+            color: #ffffff;
+            color: var(--bg-color);
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex; /* 让图标居中 */
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            z-index: 101;
+            opacity: 0;
+            -webkit-transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            -moz-transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            -o-transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            /* 确保旋转围绕中心点 */
+            -webkit-transform-origin: center center;
+            -moz-transform-origin: center center;
+            -ms-transform-origin: center center;
+            -o-transform-origin: center center;
+            transform-origin: center center;
+            pointer-events: none;
+            /* 禁止选择复制 */
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .theme-toggle:active {
+            -webkit-transform: scale(0.9) translateZ(0);
+            -moz-transform: scale(0.9) translateZ(0);
+            -ms-transform: scale(0.9) translateZ(0);
+            -o-transform: scale(0.9) translateZ(0);
+            transform: scale(0.9) translateZ(0);
+        }
+
+        .theme-toggle.visible {
+            top: 15px;
+            opacity: 1;
+        }
+
+        /* 设置页面样式 */
+        .settings-page {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            right: 0;
+            bottom: 80px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 40px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .settings-header {
+            margin-bottom: 40px;
+        }
+
+        .settings-header h2 {
+            font-size: 24px;
+            color: var(--text-color);
+            margin: 0 0 20px 0;
+        }
+
+        .settings-nav {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .settings-nav-btn {
+            padding: 10px 16px;
+            border: none;
+            background-color: transparent;
+            color: var(--text-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            -webkit-transition: all 0.3s ease;
+            -moz-transition: all 0.3s ease;
+            -o-transition: all 0.3s ease;
+            transition: all 0.3s ease;
+        }
+
+        .settings-nav-btn:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .settings-nav-btn.active {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+        }
+
+        .settings-section {
+            margin-bottom: 40px;
+        }
+
+        .settings-section h3 {
+            font-size: 18px;
+            color: var(--text-color);
+            margin: 0 0 20px 0;
+        }
+
+        .setting-item {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-pack: justify;
+            -ms-flex-pack: justify;
+            justify-content: space-between;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .setting-item label {
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .setting-item .setting-value {
+            font-size: 12px;
+            color: #666;
+            margin-right: 10px;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .settings-page {
+                padding: 20px;
+                bottom: 60px;
+            }
+            
+            .settings-nav {
+                -webkit-box-orient: vertical;
+                -webkit-box-direction: normal;
+                -ms-flex-direction: column;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .setting-item {
+                -webkit-box-orient: vertical;
+                -webkit-box-direction: normal;
+                -ms-flex-direction: column;
+                flex-direction: column;
+                -webkit-box-align: start;
+                -ms-flex-align: start;
+                align-items: flex-start;
+                gap: 10px;
+                padding: 15px 0;
+            }
+            
+            .setting-item .setting-value {
+                margin-right: 0;
+            }
+        }
+
+        /* 开关按钮样式 */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            -moz-transition: .4s;
+            -o-transition: .4s;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            -webkit-transition: .4s;
+            -moz-transition: .4s;
+            -o-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--accent-color);
+        }
+
+        input:focus + .toggle-slider {
+            box-shadow: 0 0 1px var(--accent-color);
+        }
+
+        input:checked + .toggle-slider:before {
+            -webkit-transform: translateX(26px);
+            -moz-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            -o-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
+        /* 拖动条样式 */
+        .slider {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #ccc;
+            outline: none;
+            -webkit-transition: .2s;
+            -moz-transition: .2s;
+            -o-transition: .2s;
+            transition: .2s;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            cursor: pointer;
+        }
+
+        /* 设置项分隔线 */
+        .setting-divider {
+            height: 1px;
+            background-color: rgba(0, 0, 0, 0.1);
+            margin: 10px 0;
+        }
+
+        /* 设置项样式 */
+        .setting-item {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-pack: justify;
+            -ms-flex-pack: justify;
+            justify-content: space-between;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        .setting-item label {
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .setting-item .setting-value {
+            font-size: 12px;
+            color: #666;
+            margin-right: 10px;
+        }
+
+        @-webkit-keyframes slideIn {
+            from {
+                opacity: 0;
+                -webkit-transform: translate(-50%, -60%);
+            }
+            to {
+                opacity: 1;
+                -webkit-transform: translate(-50%, -50%);
+            }
+        }
+
+        @-moz-keyframes slideIn {
+            from {
+                opacity: 0;
+                -moz-transform: translate(-50%, -60%);
+            }
+            to {
+                opacity: 1;
+                -moz-transform: translate(-50%, -50%);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                -webkit-transform: translate(-50%, -60%);
+                -moz-transform: translate(-50%, -60%);
+                -ms-transform: translate(-50%, -60%);
+                -o-transform: translate(-50%, -60%);
+                transform: translate(-50%, -60%);
+            }
+            to {
+                opacity: 1;
+                -webkit-transform: translate(-50%, -50%);
+                -moz-transform: translate(-50%, -50%);
+                -ms-transform: translate(-50%, -50%);
+                -o-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        .settings-header {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-pack: justify;
+            -ms-flex-pack: justify;
+            justify-content: space-between;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .settings-header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--text-color);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-color);
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+        }
+
+        .settings-content {
+            padding: 20px;
+        }
+
+        .setting-section {
+            margin-bottom: 25px;
+        }
+
+        .setting-section h4 {
+            margin: 0 0 15px 0;
+            font-size: 16px;
+            color: var(--text-color);
+        }
+
+        .setting-options {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-orient: vertical;
+            -webkit-box-direction: normal;
+            -ms-flex-direction: column;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .setting-options label {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .setting-btn {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            -webkit-transition: background-color 0.3s ease, transform 0.2s ease;
+            -moz-transition: background-color 0.3s ease, transform 0.2s ease;
+            -o-transition: background-color 0.3s ease, transform 0.2s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .setting-btn:hover {
+            opacity: 0.8;
+        }
+
+        .setting-btn:active {
+            -webkit-transform: scale(0.95);
+            -moz-transform: scale(0.95);
+            -ms-transform: scale(0.95);
+            -o-transform: scale(0.95);
+            transform: scale(0.95);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .settings-panel {
+                width: 95%;
+                max-height: 90vh;
+            }
+        }
+
+        @-webkit-keyframes sunRotate {
+            0% { -webkit-transform: rotate(0deg) translateZ(0); }
+            100% { -webkit-transform: rotate(360deg) translateZ(0); }
+        }
+
+        @-moz-keyframes sunRotate {
+            0% { -moz-transform: rotate(0deg) translateZ(0); }
+            100% { -moz-transform: rotate(360deg) translateZ(0); }
+        }
+
+        @keyframes sunRotate {
+            0% { -webkit-transform: rotate(0deg) translateZ(0); -moz-transform: rotate(0deg) translateZ(0); -ms-transform: rotate(0deg) translateZ(0); -o-transform: rotate(0deg) translateZ(0); transform: rotate(0deg) translateZ(0); }
+            100% { -webkit-transform: rotate(360deg) translateZ(0); -moz-transform: rotate(360deg) translateZ(0); -ms-transform: rotate(360deg) translateZ(0); -o-transform: rotate(360deg) translateZ(0); transform: rotate(360deg) translateZ(0); }
+        }
+
+        /* 底部栏样式 */
+        .footer {
+            position: fixed;
+            bottom: -80px;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background-color: #000000;
+            background-color: var(--footer-bg);
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            gap: 20px;
+            padding: 0 20px;
+            -webkit-transition: bottom 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+            -moz-transition: bottom 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+            -o-transition: bottom 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: bottom 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+            -webkit-transform: scaleY(0.8);
+            -moz-transform: scaleY(0.8);
+            -ms-transform: scaleY(0.8);
+            -o-transform: scaleY(0.8);
+            transform: scaleY(0.8);
+            -webkit-transform-origin: bottom center;
+            -moz-transform-origin: bottom center;
+            -ms-transform-origin: bottom center;
+            -o-transform-origin: bottom center;
+            transform-origin: bottom center;
+            z-index: 98;
+        }
+
+        .footer.visible {
+            -webkit-transform: scaleY(1);
+            -moz-transform: scaleY(1);
+            -ms-transform: scaleY(1);
+            -o-transform: scaleY(1);
+            transform: scaleY(1);
+        }
+
+        /* 根据预加载的CSS变量设置初始状态 */
+        :root {
+            --footer-visible: true;
+        }
+
+        [style*="--footer-visible: true"] .footer {
+            bottom: 0;
+        }
+
+        [style*="--footer-visible: false"] .footer {
+            bottom: -80px;
+        }
+
+        .footer.visible {
+            bottom: 0;
+        }
+
+        /* 底部控制按钮：新增白色边框，其他完全不变 */
+        .footer-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 44px;
+            height: 44px;
+            background-color: #000000;
+            background-color: var(--footer-bg);
+            border: 2px solid #ffffff; /* 新增的白色边框 */
+            border-radius: 12px; /* 全圆角矩形 */
+            color: #ffffff;
+            color: var(--footer-text);
+            cursor: pointer;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            font-size: 18px;
+            z-index: 999; /* 永远在最上层 */
+            opacity: 0;
+            -webkit-transform: scale(0);
+            -moz-transform: scale(0);
+            -ms-transform: scale(0);
+            -o-transform: scale(0);
+            transform: scale(0);
+            -webkit-transition: transform 0.2s ease; /* 只保留缩放过渡，旋转只给箭头 */
+            -moz-transition: transform 0.2s ease;
+            -o-transition: transform 0.2s ease;
+            transition: transform 0.2s ease; /* 只保留缩放过渡，旋转只给箭头 */
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            /* 确保在移动端也能正确居中 */
+            text-align: center;
+            line-height: 40px;
+            pointer-events: none;
+        }
+
+        /* 箭头单独控制旋转 */
+        .toggle-arrow {
+            -webkit-transition: -webkit-transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            -moz-transition: -moz-transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            -o-transition: -o-transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: inline-block; /* 让旋转生效 */
+            -webkit-transform-origin: center center;
+            -moz-transform-origin: center center;
+            -ms-transform-origin: center center;
+            -o-transform-origin: center center;
+            transform-origin: center center;
+            /* 确保箭头始终居中 */
+            position: relative;
+            top: 0;
+            left: 0;
+        }
+
+        /* 根据预加载的CSS变量设置箭头初始旋转状态 */
+        [style*="--footer-visible: true"] .toggle-arrow {
+            -webkit-transform: rotate(180deg);
+            -moz-transform: rotate(180deg);
+            -ms-transform: rotate(180deg);
+            -o-transform: rotate(180deg);
+            transform: rotate(180deg);
+        }
+
+        [style*="--footer-visible: false"] .toggle-arrow {
+            -webkit-transform: rotate(360deg);
+            -moz-transform: rotate(360deg);
+            -ms-transform: rotate(360deg);
+            -o-transform: rotate(360deg);
+            transform: rotate(360deg);
+        }
+
+        /* Gmail同款弹跳入场动画 */
+        @-webkit-keyframes buttonBounceIn {
+            0% {
+                opacity: 0;
+                -webkit-transform: scale(0);
+            }
+            60% {
+                opacity: 1;
+                -webkit-transform: scale(1.15);
+            }
+            100% {
+                opacity: 1;
+                -webkit-transform: scale(1);
+            }
+        }
+
+        @-moz-keyframes buttonBounceIn {
+            0% {
+                opacity: 0;
+                -moz-transform: scale(0);
+            }
+            60% {
+                opacity: 1;
+                -moz-transform: scale(1.15);
+            }
+            100% {
+                opacity: 1;
+                -moz-transform: scale(1);
+            }
+        }
+
+        @keyframes buttonBounceIn {
+            0% {
+                opacity: 0;
+                -webkit-transform: scale(0);
+                -moz-transform: scale(0);
+                -ms-transform: scale(0);
+                -o-transform: scale(0);
+                transform: scale(0);
+            }
+            60% {
+                opacity: 1;
+                -webkit-transform: scale(1.15);
+                -moz-transform: scale(1.15);
+                -ms-transform: scale(1.15);
+                -o-transform: scale(1.15);
+                transform: scale(1.15);
+            }
+            100% {
+                opacity: 1;
+                -webkit-transform: scale(1);
+                -moz-transform: scale(1);
+                -ms-transform: scale(1);
+                -o-transform: scale(1);
+                transform: scale(1);
+            }
+        }
+
+        .footer-toggle.visible {
+            -webkit-animation: buttonBounceIn 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+            -moz-animation: buttonBounceIn 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+            animation: buttonBounceIn 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+        }
+
+        /* 按下弹起微动画，只有缩放，不会旋转 */
+        .footer-toggle:active {
+            -webkit-transform: scale(0.92) !important;
+            -moz-transform: scale(0.92) !important;
+            -ms-transform: scale(0.92) !important;
+            -o-transform: scale(0.92) !important;
+            transform: scale(0.92) !important;
+        }
+
+        .social-item {
+            position: relative;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            opacity: 0;
+            -webkit-transform: scale(0.5);
+            -moz-transform: scale(0.5);
+            -ms-transform: scale(0.5);
+            -o-transform: scale(0.5);
+            transform: scale(0.5);
+        }
+
+        .social-item.visible {
+            opacity: 1;
+            -webkit-transform: scale(1);
+            -moz-transform: scale(1);
+            -ms-transform: scale(1);
+            -o-transform: scale(1);
+            transform: scale(1);
+            -webkit-animation: bounce 0.5s cubic-bezier(0.25, 0.8, 0.25, 1.2);
+            -moz-animation: bounce 0.5s cubic-bezier(0.25, 0.8, 0.25, 1.2);
+            animation: bounce 0.5s cubic-bezier(0.25, 0.8, 0.25, 1.2);
+        }
+
+        @-webkit-keyframes bounce {
+            0% { -webkit-transform: scale(0.5); }
+            60% { -webkit-transform: scale(1.1); }
+            100% { -webkit-transform: scale(1); }
+        }
+
+        @-moz-keyframes bounce {
+            0% { -moz-transform: scale(0.5); }
+            60% { -moz-transform: scale(1.1); }
+            100% { -moz-transform: scale(1); }
+        }
+
+        @keyframes bounce {
+            0% { -webkit-transform: scale(0.5); -moz-transform: scale(0.5); -ms-transform: scale(0.5); -o-transform: scale(0.5); transform: scale(0.5); }
+            60% { -webkit-transform: scale(1.1); -moz-transform: scale(1.1); -ms-transform: scale(1.1); -o-transform: scale(1.1); transform: scale(1.1); }
+            100% { -webkit-transform: scale(1); -moz-transform: scale(1); -ms-transform: scale(1); -o-transform: scale(1); transform: scale(1); }
+        }
+
+        .social-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            background-color: var(--footer-text);
+            color: #000000;
+            color: var(--footer-bg);
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 2;
+            -webkit-transition: transform 0.3s ease;
+            -moz-transition: transform 0.3s ease;
+            -o-transition: transform 0.3s ease;
+            transition: transform 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            pointer-events: none;
+        }
+
+        .social-btn:active {
+            -webkit-transform: scale(0.9) translateZ(0);
+            -moz-transform: scale(0.9) translateZ(0);
+            -ms-transform: scale(0.9) translateZ(0);
+            -o-transform: scale(0.9) translateZ(0);
+            transform: scale(0.9) translateZ(0);
+        }
+
+        .social-btn:hover {
+            -webkit-transform: scale(1.1) translateZ(0);
+            -moz-transform: scale(1.1) translateZ(0);
+            -ms-transform: scale(1.1) translateZ(0);
+            -o-transform: scale(1.1) translateZ(0);
+            transform: scale(1.1) translateZ(0);
+        }
+
+
+
+        .welcome-container {
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            -moz-transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            -o-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-orient: vertical;
+            -webkit-box-direction: normal;
+            -ms-flex-direction: column;
+            flex-direction: column;
+            gap: 20px;
+            -webkit-animation: riseUp 1s ease forwards;
+            -moz-animation: riseUp 1s ease forwards;
+            animation: riseUp 1s ease forwards;
+        }
+
+        @-webkit-keyframes riseUp {
+            0% { top: 65%; opacity: 0; transform: translate(-50%, -50%); }
+            100% { top: 50%; opacity: 1; transform: translate(-50%, -50%); }
+        }
+
+        @-moz-keyframes riseUp {
+            0% { top: 65%; opacity: 0; transform: translate(-50%, -50%); }
+            100% { top: 50%; opacity: 1; transform: translate(-50%, -50%); }
+        }
+
+        @keyframes riseUp {
+            0% { top: 65%; opacity: 0; transform: translate(-50%, -50%); }
+            100% { top: 50%; opacity: 1; transform: translate(-50%, -50%); }
+        }
+
+        .welcome-text-wrapper {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: baseline;
+            -ms-flex-align: baseline;
+            align-items: baseline;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            width: 100%;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+        }
+
+        .welcome-text {
+            font-size: 36px;
+            color: var(--text-color);
+            opacity: 1;
+        }
+
+        .welcome-logo {
+            font-size: 42px;
+            font-weight: bold;
+            color: var(--text-color);
+            margin: 0 6px;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .welcome-logo-main {
+            font-size: 42px;
+        }
+
+        .welcome-logo-suffix {
+            font-size: 18px;
+            margin-left: 3px;
+            margin-bottom: 6px;
+            color: #666;
+        }
+
+        .loading-bar-container {
+            width: 80%;
+            max-width: 400px;
+            height: 6px;
+            background-color: rgba(0,0,0,0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            margin: 0 auto;
+        }
+
+        .loading-bar-container.visible {
+            opacity: 1;
+        }
+
+        .loading-bar {
+            height: 100%;
+            background-color: var(--accent-color);
+            width: 0%;
+            -webkit-transition: width 0.3s ease;
+            -moz-transition: width 0.3s ease;
+            -o-transition: width 0.3s ease;
+            transition: width 0.3s ease;
+        }
+
+        @-webkit-keyframes fadeTogether {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        @-moz-keyframes fadeTogether {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        @keyframes fadeTogether {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        @-webkit-keyframes logoFadeUpOut {
+            0% {
+                top: 50%;
+                left: 50%;
+                -webkit-transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            50% {
+                top: 40%;
+                left: 50%;
+                -webkit-transform: translate(-50%, -50%) scale(1.1);
+                opacity: 0.7;
+            }
+            100% {
+                top: 25%;
+                left: 50%;
+                -webkit-transform: translate(-50%, -50%) scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        @-moz-keyframes logoFadeUpOut {
+            0% {
+                top: 50%;
+                left: 50%;
+                -moz-transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            50% {
+                top: 40%;
+                left: 50%;
+                -moz-transform: translate(-50%, -50%) scale(1.1);
+                opacity: 0.7;
+            }
+            100% {
+                top: 25%;
+                left: 50%;
+                -moz-transform: translate(-50%, -50%) scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        @keyframes logoFadeUpOut {
+            0% {
+                top: 50%;
+                left: 50%;
+                -webkit-transform: translate(-50%, -50%) scale(1);
+                -moz-transform: translate(-50%, -50%) scale(1);
+                -ms-transform: translate(-50%, -50%) scale(1);
+                -o-transform: translate(-50%, -50%) scale(1);
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            50% {
+                top: 40%;
+                left: 50%;
+                -webkit-transform: translate(-50%, -50%) scale(1.1);
+                -moz-transform: translate(-50%, -50%) scale(1.1);
+                -ms-transform: translate(-50%, -50%) scale(1.1);
+                -o-transform: translate(-50%, -50%) scale(1.1);
+                transform: translate(-50%, -50%) scale(1.1);
+                opacity: 0.7;
+            }
+            100% {
+                top: 25%;
+                left: 50%;
+                -webkit-transform: translate(-50%, -50%) scale(0.8);
+                -moz-transform: translate(-50%, -50%) scale(0.8);
+                -ms-transform: translate(-50%, -50%) scale(0.8);
+                -o-transform: translate(-50%, -50%) scale(0.8);
+                transform: translate(-50%, -50%) scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        /* 手机端适配 */
+        @media (max-width: 768px) {
+            .nav-btn { padding: 0 12px; font-size: 14px; }
+            .logo { font-size: 18px; margin-right: 15px; }
+            .welcome-text { font-size: 20px; }
+            .welcome-logo { font-size: 24px; }
+            .footer { height: 60px; bottom: -60px; }
+            /* 手机端按钮自动继承白色边框，单独适配大小 */
+            .footer-toggle {
+                width: 38px;
+                height: 38px;
+                border-radius: 10px;
+                bottom: 15px;
+                right: 15px;
+                font-size: 16px;
+            }
+            .social-btn { width: 32px; height: 32px; font-size: 16px; }
+            .progress-bar { height: calc(100% - 60px - 60px); }
+            body { padding-bottom: 60px; }
+        }
+
+        /* 内容容器样式 */
+        .content {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            right: 0;
+            bottom: 80px;
+            overflow-y: auto;
+            z-index: 1;
+        }
+        
+        /* 响应式内容容器 */
+        @media (max-width: 768px) {
+            .content {
+                bottom: 60px;
+            }
+        }
+        
+        /* 横屏适配 */
+        @media (orientation: landscape) {
+            .content {
+                bottom: 60px;
+            }
+        }
+
+        /* 横屏适配 */
+        @media (orientation: landscape) {
+            .welcome-container {
+                top: 50%;
+            }
+            
+            .footer {
+                height: 60px;
+                bottom: -60px;
+            }
+            
+            .footer-toggle {
+                width: 38px;
+                height: 38px;
+                bottom: 15px;
+                right: 15px;
+                font-size: 16px;
+            }
+            
+            .social-btn { width: 32px; height: 32px; font-size: 16px; }
+            
+            body {
+                padding-bottom: 60px;
+            }
+        }
+
+        /* 竖屏适配 */
+        @media (orientation: portrait) {
+            .welcome-container {
+                top: 60%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="theme-mask" id="themeMask"></div>
+
+<!-- 底部控制按钮：箭头单独包裹，只转箭头不转按钮 -->
+<button class="footer-toggle" id="footerToggle" title="Shift+左键回顶部，Alt+左键回底部，左键单击展开收起底边栏">
+    <span class="toggle-arrow" id="toggleArrow">↑</span>
+</button>
+
+<div class="navbar" id="navbar">
+        <div class="logo" id="logo" onclick="location.href='index.html'" title="单击返回主页">
+            <span class="logo-main">Amik</span>
+            <span class="logo-suffix">.cc.cd</span>
+        </div>
+        <div class="nav-links">
+            <button class="nav-btn" data-index="0" onclick="location.href='about/index.html'" title="关于我们">关于</button>
+            <button class="nav-btn" data-index="1" onclick="location.href='works/index.html'" title="查看作品">作品</button>
+            <button class="nav-btn" data-index="2" onclick="location.href='notes/index.html'" title="阅读笔记">笔记</button>
+            <button class="nav-btn" data-index="3" onclick="location.href='setting/index.html'" title="设置" id="settingsBtn">设置</button>
+            <div class="nav-indicator" id="navIndicator"></div>
+        </div>
+    </div>
+
+<!-- 语言切换按钮 -->
+<div class="language-toggle" id="languageToggle" title="切换语言">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+    </svg>
+</div>
+
+<div class="theme-toggle" id="themeToggle" title="切换深浅">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="theme-icon">
+        <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
+    </svg>
+</div>
+
+<!-- 阅读进度条 -->
+<div class="progress-bar" id="progressBar">
+    <div class="progress-bar-fill" id="progressBarFill"></div>
+</div>
+
+<!-- 内容区域，用于动态加载页面 -->
+    <div class="content" id="contentContainer" style="overflow-y: hidden;">
+        <div class="welcome-container" id="welcomeContainer">
+            <div class="welcome-text-wrapper" id="textWrapper">
+                <span class="welcome-text" id="textLeft">欢迎来到</span>
+                <span class="welcome-logo" id="welcomeLogo">
+                    <span class="welcome-logo-main">Amik</span>
+                    <span class="welcome-logo-suffix">.cc.cd</span>
+                </span>
+                <span class="welcome-text" id="textRight">主页！</span>
+            </div>
+            <div class="loading-bar-container" id="loadingBarContainer">
+                <div class="loading-bar" id="loadingBar"></div>
+            </div>
+        </div>
+    
+    <!-- 个人简介 -->
+    <div class="profile-section" style="padding: 40px 20px; max-width: 1200px; margin: 0 auto; opacity: 0; transform: translateY(30px) scale(0.95); transition: opacity 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);">
+        <h2 style="font-size: 1.75rem; margin-bottom: 30px; color: var(--text-color); text-align: center;">关于我</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 40px; align-items: center; justify-content: center;">
+            <div style="flex: 1; min-width: 300px; max-width: 400px;">
+                <div style="width: 200px; height: 200px; border-radius: 50%; background-color: var(--accent-color); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; color: var(--bg-color); font-size: 5rem;">A</div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 10px; text-align: center; color: var(--text-color);">Amik</h3>
+                <p style="font-size: 1rem; text-align: center; color: #666; margin-bottom: 20px;">Web Developer & Designer</p>
+            </div>
+            <div style="flex: 2; min-width: 300px;">
+                <p style="font-size: 1rem; line-height: 1.6; color: var(--text-color); margin-bottom: 20px;">Hello! 我是Amik，一名热爱技术的全栈开发工程师。我专注于创建美观、高效的网站和应用程序，拥有丰富的前端和后端开发经验。</p>
+                <p style="font-size: 1rem; line-height: 1.6; color: var(--text-color);">我热爱解决问题，不断学习新技术，并且善于团队合作。我的目标是通过技术创造有价值的产品，为用户提供优质的体验。</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 技能展示 -->
+    <div class="skills-section" style="padding: 40px 20px; background-color: rgba(0,0,0,0.02); margin: 40px 0; opacity: 0; transform: translateY(30px) scale(0.95); transition: opacity 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1); transition-delay: 0.2s;">
+        <h2 style="font-size: 1.75rem; margin-bottom: 30px; color: var(--text-color); text-align: center;">我的技能</h2>
+        <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
+            <div style="background-color: var(--bg-color); padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: all 0.3s ease;">
+                <h3 style="font-size: 1.25rem; margin-bottom: 20px; color: var(--text-color);">前端开发</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="font-size: 1rem; margin-bottom: 10px; color: var(--text-color);">HTML5 / CSS3</li>
+                    <li style="font-size: 1rem; margin-bottom: 10px; color: var(--text-color);">JavaScript / TypeScript</li>
+                    <li style="font-size: 1rem; margin-bottom: 10px; color: var(--text-color);">React / Vue</li>
+                    <li style="font-size: 1rem; margin-bottom: 10px; color: var(--text-color);">响应式设计</li>
+                </ul>
+            </div>
+            <div style="background-color: var(--bg-color); padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: all 0.3s ease;">
+                <h3 style="font-size: 1.25rem; margin-bottom: 20px; color: var(--text-color);">后端开发</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="font-size: 1rem; margin-bottom: 10px; color: var(--text-color);">Node.js</li>
+                    <li style="font-size: 1rem; margin-bottom: 10px; color: var(--text-color);">Express / NestJS</li>
+                    <li style="font-size: 1rem; margin-bottom: 10px; color: var(--text-color);">MongoDB / MySQL</li>
+                    <li style="font-size: 1rem; margin-bottom: 10px; color: var(--text-color);">RESTful API</li>
+                </ul>
+            </div>
+            <div style="background-color: var(--bg-color); padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: all 0.3s ease;">
+                <h3 style="font-size: 1.25rem; margin-bottom: 20px; color: var(--text-color);">其他技能</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="font-size: 1rem; margin-bottom: 10px; color: var(--text-color);">Git / GitHub</li>
+                    <li style="font-size: 1rem; margin-bottom: 10px; color: var(--text-color);">Docker</li>
+                    <li style="font-size: 1rem; margin-bottom: 10px; color: var(--text-color);">UI/UX 设计</li>
+                    <li style="font-size: 1rem; margin-bottom: 10px; color: var(--text-color);">项目管理</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 项目展示 -->
+    <div class="projects-section" style="padding: 40px 20px; max-width: 1200px; margin: 0 auto; opacity: 0; transform: translateY(30px) scale(0.95); transition: opacity 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1); transition-delay: 0.4s;">
+        <h2 style="font-size: 1.75rem; margin-bottom: 30px; color: var(--text-color); text-align: center;">我的项目</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+            <div style="background-color: var(--bg-color); border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: all 0.3s ease;">
+                <div style="height: 200px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999;">项目截图</div>
+                <div style="padding: 20px;">
+                    <h3 style="font-size: 1.125rem; margin-bottom: 10px; color: var(--text-color);">项目名称 1</h3>
+                    <p style="font-size: 0.875rem; line-height: 1.5; color: #666; margin-bottom: 15px;">这是一个项目描述，介绍项目的功能和特点。</p>
+                    <a href="#" style="display: inline-block; padding: 8px 16px; background-color: var(--accent-color); color: var(--bg-color); border-radius: 5px; text-decoration: none; font-size: 0.875rem;">查看详情</a>
+                </div>
+            </div>
+            <div style="background-color: var(--bg-color); border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: all 0.3s ease;">
+                <div style="height: 200px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999;">项目截图</div>
+                <div style="padding: 20px;">
+                    <h3 style="font-size: 1.125rem; margin-bottom: 10px; color: var(--text-color);">项目名称 2</h3>
+                    <p style="font-size: 0.875rem; line-height: 1.5; color: #666; margin-bottom: 15px;">这是一个项目描述，介绍项目的功能和特点。</p>
+                    <a href="#" style="display: inline-block; padding: 8px 16px; background-color: var(--accent-color); color: var(--bg-color); border-radius: 5px; text-decoration: none; font-size: 0.875rem;">查看详情</a>
+                </div>
+            </div>
+            <div style="background-color: var(--bg-color); border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: all 0.3s ease;">
+                <div style="height: 200px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999;">项目截图</div>
+                <div style="padding: 20px;">
+                    <h3 style="font-size: 1.125rem; margin-bottom: 10px; color: var(--text-color);">项目名称 3</h3>
+                    <p style="font-size: 0.875rem; line-height: 1.5; color: #666; margin-bottom: 15px;">这是一个项目描述，介绍项目的功能和特点。</p>
+                    <a href="#" style="display: inline-block; padding: 8px 16px; background-color: var(--accent-color); color: var(--bg-color); border-radius: 5px; text-decoration: none; font-size: 0.875rem;">查看详情</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 联系方式 -->
+    <div class="contact-section" style="padding: 40px 20px; background-color: rgba(0,0,0,0.02); margin: 40px 0; opacity: 0; transform: translateY(30px) scale(0.95); transition: opacity 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1); transition-delay: 0.6s;">
+        <h2 style="font-size: 1.75rem; margin-bottom: 30px; color: var(--text-color); text-align: center;">联系我</h2>
+        <div style="max-width: 600px; margin: 0 auto; text-align: center;">
+            <p style="font-size: 1rem; line-height: 1.6; color: var(--text-color); margin-bottom: 30px;">如果您对我的工作感兴趣，或者有任何问题，欢迎随时联系我！</p>
+            <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                <a href="mailto:AmikKellan@gmail.com" style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 20px; background-color: var(--bg-color); color: var(--text-color); border-radius: 5px; text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.3s ease;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                    </svg>
+                    Gmail
+                </a>
+                <a href="https://github.com/Amikkellan" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 20px; background-color: var(--bg-color); color: var(--text-color); border-radius: 5px; text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.3s ease;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    GitHub
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="footer" id="footer">
+    <div class="social-item" id="socialItem1">
+        <a href="mailto:AmikKellan@gmail.com" class="social-btn" title="发送邮件">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+            </svg>
+        </a>
+    </div>
+    <div class="social-item" id="socialItem2">
+        <a href="https://github.com/Amikkellan" target="_blank" rel="noopener noreferrer" class="social-btn" title="访问GitHub">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+        </a>
+    </div>
+</div>
+
+<script>
+    let currentLanguage = getLocalStorage('language', 'zh-CN');
+
+    // 更新语言
+    function updateLanguage(lang) {
+        // 如果没有传递语言参数，使用当前语言
+        if (!lang) {
+            lang = currentLanguage;
+        } else {
+            // 更新全局变量
+            currentLanguage = lang;
+        }
+        
+        const elements = {
+            'zh-CN': {
+                'about': '关于',
+                'works': '作品',
+                'notes': '笔记',
+                'settings': '设置',
+                'copyEmail': '点击以复制',
+                'footerToggle': 'Shift+左键回顶部，Alt+左键回底部，左键单击展开收起底边栏',
+                'themeToggle': '切换深浅',
+                'languageToggle': '切换语言',
+                'logo': '单击返回主页'
+            },
+            'en-US': {
+                'about': 'About',
+                'works': 'Works',
+                'notes': 'Notes',
+                'settings': 'Settings',
+                'copyEmail': 'Click to copy',
+                'footerToggle': 'Shift+Left Click to top, Alt+Left Click to bottom, Left Click to toggle footer',
+                'themeToggle': 'Toggle theme',
+                'languageToggle': 'Toggle language',
+                'logo': 'Click to return to home page'
+            }
+        };
+
+        // 使用通用函数更新导航按钮
+        updateNavButtons(lang, elements);
+
+        // 更新其他提示文本
+        document.getElementById('logo').title = elements[lang]['logo'];
+        document.getElementById('footerToggle').title = elements[lang]['footerToggle'];
+        document.getElementById('themeToggle').title = elements[lang]['themeToggle'];
+        document.getElementById('languageToggle').title = elements[lang]['languageToggle'];
+        
+        // 语言切换后重新初始化导航指示器
+        setTimeout(initNavIndicator, 100);
+    }
+
+</script>
+
+<script>
+    const welcomeContainer = document.getElementById('welcomeContainer');
+    const loadingBarContainer = document.getElementById('loadingBarContainer');
+    const loadingBar = document.getElementById('loadingBar');
+    const textLeft = document.getElementById('textLeft');
+    const textRight = document.getElementById('textRight');
+    const welcomeLogo = document.getElementById('welcomeLogo');
+    const textWrapper = document.getElementById('textWrapper');
+    const navbar = document.getElementById('navbar');
+    const navBtns = document.querySelectorAll('.nav-btn');
+    const footer = document.getElementById('footer');
+    const socialItems = document.querySelectorAll('.social-item');
+    const themeToggle = document.getElementById('themeToggle');
+
+    const indicator = document.getElementById('navIndicator');
+    const themeMask = document.getElementById('themeMask');
+    const footerToggle = document.getElementById('footerToggle');
+    const toggleArrow = document.getElementById('toggleArrow'); // 单独的箭头元素
+
+    // 模拟页面加载进度
+    function simulateLoading() {
+        let progress = 0;
+        const loadingBar = document.getElementById('loadingBar');
+        const loadingBarContainer = document.getElementById('loadingBarContainer');
+        // 检查加载动画开关状态
+        const loadingAnimationEnabled = getLocalStorage('loadingAnimation', 'true') !== 'false';
+        
+        // 0.2秒后显示进度条
+        setTimeout(() => {
+            if (loadingBarContainer) {
+                loadingBarContainer.classList.add('visible');
+            }
+            
+            if (loadingBar) {
+                // 快速加载到95%
+                loadingBar.style.width = '95%';
+                
+                // 然后在0.3秒内慢慢加载剩余的5%
+                setTimeout(() => {
+                    loadingBar.style.width = '100%';
+                    
+                    // 加载完成后，标题和进度条淡化
+                    setTimeout(() => {
+                        if (textLeft) textLeft.style.animation = 'fadeTogether 0.6s ease forwards';
+                        if (textRight) textRight.style.animation = 'fadeTogether 0.6s ease forwards';
+                        if (loadingBarContainer) loadingBarContainer.style.animation = 'fadeTogether 0.6s ease forwards';
+
+                        setTimeout(() => {
+                            if (textLeft) textLeft.style.visibility = 'hidden';
+                            if (textRight) textRight.style.visibility = 'hidden';
+
+                            setTimeout(() => {
+                                if (loadingAnimationEnabled && welcomeContainer) {
+                                    // 修改动画，让Amik.cc.cd移动到屏幕正中间，上升更多再消失
+                                    welcomeContainer.style.position = 'absolute';
+                                    welcomeContainer.style.top = '50%';
+                                    welcomeContainer.style.left = '50%';
+                                    welcomeContainer.style.transform = 'translate(-50%, -50%)';
+                                    
+                                    // 创建新的上升动画
+                                    const newAnimation = document.createElement('style');
+                                    newAnimation.textContent = `
+                                        @-webkit-keyframes logoFadeUpOut {
+                                            0% {
+                                                top: 50%;
+                                                left: 50%;
+                                                -webkit-transform: translate(-50%, -50%);
+                                                opacity: 1;
+                                            }
+                                            100% {
+                                                top: 25%;
+                                                left: 50%;
+                                                -webkit-transform: translate(-50%, -50%);
+                                                opacity: 0;
+                                            }
+                                        }
+                                        
+                                        @-moz-keyframes logoFadeUpOut {
+                                            0% {
+                                                top: 50%;
+                                                left: 50%;
+                                                -moz-transform: translate(-50%, -50%);
+                                                opacity: 1;
+                                            }
+                                            100% {
+                                                top: 25%;
+                                                left: 50%;
+                                                -moz-transform: translate(-50%, -50%);
+                                                opacity: 0;
+                                            }
+                                        }
+                                        
+                                        @keyframes logoFadeUpOut {
+                                            0% {
+                                                top: 50%;
+                                                left: 50%;
+                                                -webkit-transform: translate(-50%, -50%);
+                                                -moz-transform: translate(-50%, -50%);
+                                                -ms-transform: translate(-50%, -50%);
+                                                -o-transform: translate(-50%, -50%);
+                                                transform: translate(-50%, -50%);
+                                                opacity: 1;
+                                            }
+                                            100% {
+                                                top: 25%;
+                                                left: 50%;
+                                                -webkit-transform: translate(-50%, -50%);
+                                                -moz-transform: translate(-50%, -50%);
+                                                -ms-transform: translate(-50%, -50%);
+                                                -o-transform: translate(-50%, -50%);
+                                                transform: translate(-50%, -50%);
+                                                opacity: 0;
+                                            }
+                                        }
+                                    `;
+                                    document.head.appendChild(newAnimation);
+                                    
+                                    // 应用新动画
+                                    welcomeContainer.style.animation = 'logoFadeUpOut 0.7s ease forwards';
+
+                                    setTimeout(() => {
+                                        if (welcomeContainer) welcomeContainer.remove();
+                                        // 各项页面元素出现
+                                        showPageElements(loadingAnimationEnabled);
+                                    }, 700);
+                                } else {
+                                    // 加载动画关闭时，直接淡出logo
+                                    if (welcomeContainer) {
+                                        welcomeContainer.style.animation = 'fadeTogether 0.6s ease forwards';
+                                        setTimeout(() => {
+                                            welcomeContainer.remove();
+                                            // 各项页面元素出现，无动画
+                                            showPageElements(loadingAnimationEnabled);
+                                        }, 600);
+                                    } else {
+                                        // 如果welcomeContainer不存在，直接显示页面元素
+                                        showPageElements(loadingAnimationEnabled);
+                                    }
+                                }
+                            }, 400);
+                        }, 600);
+                    }, 400); // 增加延迟，让加载完成后有更多停留时间
+                }, 300);
+            } else {
+                // 如果loadingBar不存在，直接显示页面元素
+                showPageElements(loadingAnimationEnabled);
+            }
+        }, 200);
+    }
+
+    // 显示页面元素
+    function showPageElements(animationEnabled) {
+        // 各项页面元素出现
+        navbar.style.opacity = 1;
+        navbar.style.transform = 'translateY(0)';
+        // 移除navbar的pointer-events: none，使logo和导航按钮可以点击
+        navbar.style.pointerEvents = 'auto';
+
+        // 初始化页面设置，包括字体大小
+        initPage();
+
+        if (animationEnabled) {
+            // 一次性显示所有导航按钮
+            navBtns.forEach((btn) => {
+                btn.classList.add('show');
+                // 移除pointer-events: none，使按钮可以点击
+                btn.style.pointerEvents = 'auto';
+            });
+
+            // 底部栏状态由initFooterState()处理
+
+            // 一次性显示所有元素
+            socialItems.forEach(item => {
+                item.classList.add('visible');
+                // 移除social-btn的pointer-events: none，使按钮可以点击
+                const socialBtn = item.querySelector('.social-btn');
+                if (socialBtn) {
+                    socialBtn.style.pointerEvents = 'auto';
+                }
+            });
+
+            // 电脑端指示线初始位置 - 主页定位在logo下方
+            // 使用setTimeout确保DOM已经渲染完成并应用了所有样式
+            setTimeout(() => {
+                const logo = document.getElementById('logo');
+                const navLinks = document.querySelector('.nav-links');
+                if (logo && navLinks) {
+                    // 计算logo相对于nav-links的偏移量
+                    const logoRect = logo.getBoundingClientRect();
+                    const navLinksRect = navLinks.getBoundingClientRect();
+                    const relativeLeft = logoRect.left - navLinksRect.left;
+                    indicator.style.left = relativeLeft + "px";
+                    indicator.style.width = logoRect.width + "px";
+                }
+            }, 100);
+            
+            languageToggle.classList.add('visible');
+            themeToggle.classList.add('visible');
+            // 移除language-toggle和theme-toggle的pointer-events: none，使按钮可以点击
+            languageToggle.style.pointerEvents = 'auto';
+            themeToggle.style.pointerEvents = 'auto';
+            
+            footerToggle.classList.add('visible');
+            // 移除footer-toggle的pointer-events: none，使按钮可以点击
+            footerToggle.style.pointerEvents = 'auto';
+            
+            // 一次性显示所有内容区
+            const profileSection = document.querySelector('.profile-section');
+            const skillsSection = document.querySelector('.skills-section');
+            const projectsSection = document.querySelector('.projects-section');
+            const contactSection = document.querySelector('.contact-section');
+            
+            if (profileSection) {
+                profileSection.style.opacity = '1';
+                profileSection.style.transform = 'translateY(0) scale(1)';
+                profileSection.style.transition = 'opacity 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1)';
+            }
+            if (skillsSection) {
+                skillsSection.style.opacity = '1';
+                skillsSection.style.transform = 'translateY(0) scale(1)';
+                skillsSection.style.transition = 'opacity 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1)';
+            }
+            if (projectsSection) {
+                projectsSection.style.opacity = '1';
+                projectsSection.style.transform = 'translateY(0) scale(1)';
+                projectsSection.style.transition = 'opacity 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1)';
+            }
+            if (contactSection) {
+                contactSection.style.opacity = '1';
+                contactSection.style.transform = 'translateY(0) scale(1)';
+
+                contactSection.style.transition = 'opacity 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1)';
+            }
+            
+            // 恢复滚动功能
+            const contentContainer = document.getElementById('contentContainer');
+            if (contentContainer) {
+                contentContainer.style.overflowY = 'auto';
+            }
+        } else {
+            // 无动画直接显示
+            navBtns.forEach(btn => {
+                btn.classList.add('show');
+                btn.style.transition = 'none';
+                // 移除pointer-events: none，使按钮可以点击
+                btn.style.pointerEvents = 'auto';
+            });
+            
+            // 恢复滚动功能
+            const contentContainer = document.getElementById('contentContainer');
+            if (contentContainer) {
+                contentContainer.style.overflowY = 'auto';
+            }
+
+            // 底部栏状态由initFooterState()处理
+
+            // 显示其他元素
+            socialItems.forEach(item => {
+                item.classList.add('visible');
+                item.style.transition = 'none';
+                // 移除social-btn的pointer-events: none，使按钮可以点击
+                const socialBtn = item.querySelector('.social-btn');
+                if (socialBtn) {
+                    socialBtn.style.pointerEvents = 'auto';
+                }
+            });
+            
+            languageToggle.classList.add('visible');
+            languageToggle.style.transition = 'none';
+            languageToggle.style.pointerEvents = 'auto';
+            
+            themeToggle.classList.add('visible');
+            themeToggle.style.transition = 'none';
+            themeToggle.style.pointerEvents = 'auto';
+            
+            footerToggle.classList.add('visible');
+            footerToggle.style.transition = 'none';
+            footerToggle.style.pointerEvents = 'auto';
+            
+            // 电脑端指示线初始位置 - 主页定位在logo下方
+            // 使用setTimeout确保DOM已经渲染完成并应用了所有样式
+            setTimeout(() => {
+                const logo = document.getElementById('logo');
+                const navLinks = document.querySelector('.nav-links');
+                const indicator = document.getElementById('navIndicator');
+                if (logo && navLinks && indicator) {
+                    // 计算logo相对于nav-links的偏移量
+                    const logoRect = logo.getBoundingClientRect();
+                    const navLinksRect = navLinks.getBoundingClientRect();
+                    const relativeLeft = logoRect.left - navLinksRect.left;
+                    indicator.style.left = relativeLeft + "px";
+                    indicator.style.width = logoRect.width + "px";
+                }
+            }, 100);
+
+            // 显示内容区
+            const profileSection = document.querySelector('.profile-section');
+            const skillsSection = document.querySelector('.skills-section');
+            const projectsSection = document.querySelector('.projects-section');
+            const contactSection = document.querySelector('.contact-section');
+            
+            if (profileSection) {
+                profileSection.style.opacity = '1';
+                profileSection.style.transform = 'translateY(0)';
+                profileSection.style.transition = 'none';
+            }
+            if (skillsSection) {
+                skillsSection.style.opacity = '1';
+                skillsSection.style.transform = 'translateY(0)';
+                skillsSection.style.transition = 'none';
+            }
+            if (projectsSection) {
+                projectsSection.style.opacity = '1';
+                projectsSection.style.transform = 'translateY(0)';
+                projectsSection.style.transition = 'none';
+            }
+            if (contactSection) {
+                contactSection.style.opacity = '1';
+                contactSection.style.transform = 'translateY(0)';
+                contactSection.style.transition = 'none';
+            }
+            
+            // 确保按钮效果设置在之后能够正确应用
+            setTimeout(() => {
+                updateButtonEffects();
+            }, 100);
+        }
+    }
+
+    // 检查是否是首次访问
+    const hasSeenWelcome = getLocalStorage('hasSeenWelcome', 'false') === 'true';
+    
+    // 欢迎动画主流程
+    if (hasSeenWelcome) {
+        // 非首次访问，直接显示页面内容，跳过动画
+        if (welcomeContainer) welcomeContainer.remove();
+        showPageElements(false);
+        // 非首次访问时也需要更新语言
+        updateLanguage();
+    } else {
+        // 首次访问，显示欢迎动画
+        welcomeContainer.addEventListener('animationend', () => {
+            // 开始模拟加载
+            simulateLoading();
+        }, { once: true });
+        
+        // 标记已经看过欢迎动画
+        setLocalStorage('hasSeenWelcome', 'true');
+    }
+
+    // 动态加载页面内容
+    function loadPage(url) {
+        const contentContainer = document.getElementById('contentContainer');
+        
+        // 添加淡出效果
+        contentContainer.style.opacity = '0';
+        contentContainer.style.transition = 'opacity 0.3s ease';
+        
+        setTimeout(() => {
+            // 显示加载动画
+            contentContainer.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh;">
+                    <div style="font-size: 24px; margin-bottom: 20px; color: var(--text-color);">加载中...</div>
+                    <div style="width: 200px; height: 4px; background-color: rgba(0,0,0,0.1); border-radius: 2px; overflow: hidden;">
+                        <div style="width: 0%; height: 100%; background-color: var(--accent-color); transition: width 0.3s ease;"></div>
+                    </div>
+                </div>
+            `;
+            
+            // 重置透明度
+            contentContainer.style.opacity = '1';
+            
+            // 模拟加载进度
+            const loadingBar = contentContainer.querySelector('div > div > div');
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                if (loadingBar) {
+                    loadingBar.style.width = progress + '%';
+                }
+                if (progress >= 90) {
+                    clearInterval(interval);
+                }
+            }, 100);
+            
+            // 使用fetch加载页面内容
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    // 解析HTML，提取内容区域
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const content = doc.querySelector('.content');
+                    
+                    if (content) {
+                        // 清除加载动画并显示内容
+                        clearInterval(interval);
+                        if (loadingBar) {
+                            loadingBar.style.width = '100%';
+                        }
+                        
+                        setTimeout(() => {
+                            // 淡出加载动画
+                            contentContainer.style.opacity = '0';
+                            
+                            setTimeout(() => {
+                                contentContainer.innerHTML = '';
+                                contentContainer.appendChild(content);
+                                
+                                // 淡入新内容
+                                contentContainer.style.opacity = '1';
+                                
+                                // 更新页面标题
+                                const title = doc.querySelector('title');
+                                if (title) {
+                                    document.title = title.textContent;
+                                }
+                                
+                                // 重新初始化页面脚本
+                                initPageScripts();
+                            }, 300);
+                        }, 300);
+                    } else {
+                        contentContainer.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-color);">页面加载失败</div>';
+                        contentContainer.style.opacity = '1';
+                    }
+                })
+                .catch(error => {
+                    console.error('加载页面失败:', error);
+                    contentContainer.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-color);">页面加载失败</div>';
+                    contentContainer.style.opacity = '1';
+                });
+        }, 300);
+    }
+    
+    // 初始化页面脚本
+    function initPageScripts() {
+        // 重新绑定复制邮箱功能
+        const socialBtn = document.querySelector('.social-btn');
+        if (socialBtn) {
+            socialBtn.onclick = copyEmail;
+        }
+        
+        // 重新初始化页面公共功能
+        currentLanguage = initPage();
+        updateLanguage();
+    }
+    
+    // 导航按钮点击事件由common.js中的initNavIndicator函数处理
+    
+    // 处理浏览器前进后退
+    window.addEventListener('popstate', (e) => {
+        if (e.state && e.state.path) {
+            loadPage(e.state.path);
+        }
+    });
+
+
+
+    // 主题切换逻辑
+    themeToggle.onclick = (e) => {
+        const r = themeToggle.getBoundingClientRect();
+        const max = Math.max(innerWidth, innerHeight) * 2;
+        const currentTheme = getLocalStorage('theme', 'light');
+        let newTheme;
+
+        // 开始扩散动画
+        themeMask.style.left = r.x + r.width/2 + 'px';
+        themeMask.style.top = r.y + r.height/2 + 'px';
+        themeMask.style.width = max + 'px';
+        themeMask.style.height = max + 'px';
+
+        // 切换主题：light -> dark -> light
+        if (currentTheme === 'light') {
+            newTheme = 'dark';
+        } else {
+            newTheme = 'light';
+        }
+
+        // 应用新主题
+        if (newTheme === 'light') {
+            themeToggle.style.animation = 'sunRotate 0.3s linear';
+            setTimeout(() => {
+                themeToggle.textContent = '☀️';
+                document.body.dataset.theme = 'light';
+                document.documentElement.dataset.theme = 'light';
+                setLocalStorage('theme', 'light');
+                // 同步更新设置页面的radio按钮
+                const radio = document.querySelector('input[name="theme"][value="light"]');
+                if (radio) {
+                    radio.checked = true;
+                }
+            }, 50);
+        } else if (newTheme === 'dark') {
+            themeToggle.style.animation = 'sunRotate 0.3s linear';
+            setTimeout(() => {
+                themeToggle.textContent = '🌙';
+                document.body.dataset.theme = 'dark';
+                document.documentElement.dataset.theme = 'dark';
+                setLocalStorage('theme', 'dark');
+                // 同步更新设置页面的radio按钮
+                const radio = document.querySelector('input[name="theme"][value="dark"]');
+                if (radio) {
+                    radio.checked = true;
+                }
+            }, 50);
+        }
+
+        // 动画结束后收回遮罩
+        setTimeout(() => {
+            themeMask.style.width = '0';
+            themeMask.style.height = '0';
+            themeToggle.style.animation = '';
+        }, 700);
+    };
+
+
+
+
+
+    // 语言切换功能由common.js中的initLanguage函数处理
+
+    // 初始化导航指示器
+    function initNavIndicator() {
+        const navBtns = document.querySelectorAll('.nav-btn');
+        const indicator = document.getElementById('navIndicator');
+        
+        if (navBtns.length > 0 && indicator) {
+            // 找到当前页面对应的导航按钮
+            const currentPath = window.location.pathname;
+            let activeIndex = 0;
+            
+            if (currentPath.includes('/about/')) {
+                activeIndex = 0;
+            } else if (currentPath.includes('/works/')) {
+                activeIndex = 1;
+            } else if (currentPath.includes('/notes/')) {
+                activeIndex = 2;
+            } else if (currentPath.includes('/setting/')) {
+                activeIndex = 3;
+            }
+            
+            const activeBtn = navBtns[activeIndex];
+            if (activeBtn) {
+                indicator.style.left = activeBtn.offsetLeft + "px";
+                indicator.style.width = activeBtn.offsetWidth + "px";
+            }
+            
+            // 添加点击事件监听器
+            navBtns.forEach((btn, index) => {
+                btn.addEventListener('click', () => {
+                    indicator.style.left = btn.offsetLeft + "px";
+                    indicator.style.width = btn.offsetWidth + "px";
+                });
+            });
+        }
+    }
+
+    // 更新语言
+    function updateLanguage(lang) {
+        // 如果没有传递语言参数，使用当前语言
+        if (!lang) {
+            lang = getLocalStorage('language', 'zh-CN');
+        }
+        
+        const elements = {
+            'zh-CN': {
+                'about': '关于',
+                'works': '作品',
+                'notes': '笔记',
+                'settings': '设置',
+                'copyEmail': '点击以复制',
+                'footerToggle': 'Shift+左键回顶部，Alt+左键回底部，左键单击展开收起底边栏',
+                'themeToggle': '切换深浅',
+                'languageToggle': '切换语言',
+                'logo': '单击返回主页',
+                'welcomeLeft': '欢迎来到',
+                'welcomeRight': '主页！'
+            },
+            'en-US': {
+                'about': 'About',
+                'works': 'Works',
+                'notes': 'Notes',
+                'settings': 'Settings',
+                'copyEmail': 'Click to copy',
+                'footerToggle': 'Shift+Left Click to top, Alt+Left Click to bottom, Left Click to toggle footer',
+                'themeToggle': 'Toggle theme',
+                'languageToggle': 'Toggle language',
+                'logo': 'Click to return to home page',
+                'welcomeLeft': 'Welcome to',
+                'welcomeRight': 'Homepage!'
+            }
+        };
+
+        // 更新导航按钮
+        document.querySelector('.nav-btn[data-index="0"]').textContent = elements[lang]['about'];
+        document.querySelector('.nav-btn[data-index="1"]').textContent = elements[lang]['works'];
+        document.querySelector('.nav-btn[data-index="2"]').textContent = elements[lang]['notes'];
+        document.querySelector('.nav-btn[data-index="3"]').textContent = elements[lang]['settings'];
+
+        // 更新提示文本
+        document.querySelector('.nav-btn[data-index="0"]').title = elements[lang]['about'];
+        document.querySelector('.nav-btn[data-index="1"]').title = elements[lang]['works'];
+        document.querySelector('.nav-btn[data-index="2"]').title = elements[lang]['notes'];
+        document.querySelector('.nav-btn[data-index="3"]').title = elements[lang]['settings'];
+        document.getElementById('logo').title = elements[lang]['logo'];
+        document.getElementById('footerToggle').title = elements[lang]['footerToggle'];
+        document.getElementById('themeToggle').title = elements[lang]['themeToggle'];
+        document.getElementById('languageToggle').title = elements[lang]['languageToggle'];
+
+        // 更新欢迎动画标题
+        const textLeft = document.getElementById('textLeft');
+        const textRight = document.getElementById('textRight');
+        if (textLeft) textLeft.textContent = elements[lang]['welcomeLeft'];
+        if (textRight) textRight.textContent = elements[lang]['welcomeRight'];
+        
+        // 更新主页内容区域
+        updateHomePageContent(lang);
+        
+        // 主页下不重新初始化导航指示器，避免跳转到关于页面
+    }
+    
+    // 更新主页内容区域
+    function updateHomePageContent(lang) {
+        const elements = {
+            'zh-CN': {
+                'aboutMe': '关于我',
+                'jobTitle': 'Web Developer & Designer',
+                'aboutDesc1': 'Hello! 我是Amik，一名热爱技术的全栈开发工程师。我专注于创建美观、高效的网站和应用程序，拥有丰富的前端和后端开发经验。',
+                'aboutDesc2': '我热爱解决问题，不断学习新技术，并且善于团队合作。我的目标是通过技术创造有价值的产品，为用户提供优质的体验。',
+                'mySkills': '我的技能',
+                'frontend': '前端开发',
+                'backend': '后端开发',
+                'otherSkills': '其他技能',
+                'myProjects': '我的项目',
+                'projectName1': '项目名称 1',
+                'projectDesc1': '这是一个项目描述，介绍项目的功能和特点。',
+                'viewDetails': '查看详情',
+                'projectName2': '项目名称 2',
+                'projectDesc2': '这是一个项目描述，介绍项目的功能和特点。',
+                'projectName3': '项目名称 3',
+                'projectDesc3': '这是一个项目描述，介绍项目的功能和特点。',
+                'contactMe': '联系我',
+                'contactDesc': '如果您对我的工作感兴趣，或者有任何问题，欢迎随时联系我！'
+            },
+            'en-US': {
+                'aboutMe': 'About Me',
+                'jobTitle': 'Web Developer & Designer',
+                'aboutDesc1': 'Hello! I am Amik, a full-stack development engineer passionate about technology. I focus on creating beautiful, efficient websites and applications, with extensive experience in both frontend and backend development.',
+                'aboutDesc2': 'I love solving problems, constantly learning new technologies, and excel at teamwork. My goal is to create valuable products through technology and provide users with excellent experiences.',
+                'mySkills': 'My Skills',
+                'frontend': 'Frontend Development',
+                'backend': 'Backend Development',
+                'otherSkills': 'Other Skills',
+                'myProjects': 'My Projects',
+                'projectName1': 'Project Name 1',
+                'projectDesc1': 'This is a project description, introducing the features and characteristics of the project.',
+                'viewDetails': 'View Details',
+                'projectName2': 'Project Name 2',
+                'projectDesc2': 'This is a project description, introducing the features and characteristics of the project.',
+                'projectName3': 'Project Name 3',
+                'projectDesc3': 'This is a project description, introducing the features and characteristics of the project.',
+                'contactMe': 'Contact Me',
+                'contactDesc': 'If you are interested in my work or have any questions, please feel free to contact me!'
+            }
+        };
+        
+        // 更新"关于我"部分
+        const profileSection = document.querySelector('.profile-section h2');
+        if (profileSection) profileSection.textContent = elements[lang]['aboutMe'];
+        
+        // 更新职业头衔
+        const jobTitle = document.querySelector('.profile-section p');
+        if (jobTitle) jobTitle.textContent = elements[lang]['jobTitle'];
+        
+        // 更新个人简介段落
+        const aboutParagraphs = document.querySelectorAll('.profile-section > div > div:last-child p');
+        if (aboutParagraphs.length >= 2) {
+            aboutParagraphs[0].textContent = elements[lang]['aboutDesc1'];
+            aboutParagraphs[1].textContent = elements[lang]['aboutDesc2'];
+        }
+        
+        // 更新"我的技能"部分
+        const skillsSection = document.querySelector('.skills-section h2');
+        if (skillsSection) skillsSection.textContent = elements[lang]['mySkills'];
+        
+        // 更新技能卡片标题
+        const skillCards = document.querySelectorAll('.skills-section h3');
+        if (skillCards.length >= 3) {
+            skillCards[0].textContent = elements[lang]['frontend'];
+            skillCards[1].textContent = elements[lang]['backend'];
+            skillCards[2].textContent = elements[lang]['otherSkills'];
+        }
+        
+        // 更新"我的项目"部分
+        const projectsSection = document.querySelector('.projects-section h2');
+        if (projectsSection) projectsSection.textContent = elements[lang]['myProjects'];
+        
+        // 更新项目卡片
+        const projectCards = document.querySelectorAll('.projects-section > div > div');
+        if (projectCards.length >= 3) {
+            // 项目1
+            const project1Title = projectCards[0].querySelector('h3');
+            const project1Desc = projectCards[0].querySelector('p');
+            const project1Link = projectCards[0].querySelector('a');
+            if (project1Title) project1Title.textContent = elements[lang]['projectName1'];
+            if (project1Desc) project1Desc.textContent = elements[lang]['projectDesc1'];
+            if (project1Link) project1Link.textContent = elements[lang]['viewDetails'];
+            
+            // 项目2
+            const project2Title = projectCards[1].querySelector('h3');
+            const project2Desc = projectCards[1].querySelector('p');
+            const project2Link = projectCards[1].querySelector('a');
+            if (project2Title) project2Title.textContent = elements[lang]['projectName2'];
+            if (project2Desc) project2Desc.textContent = elements[lang]['projectDesc2'];
+            if (project2Link) project2Link.textContent = elements[lang]['viewDetails'];
+            
+            // 项目3
+            const project3Title = projectCards[2].querySelector('h3');
+            const project3Desc = projectCards[2].querySelector('p');
+            const project3Link = projectCards[2].querySelector('a');
+            if (project3Title) project3Title.textContent = elements[lang]['projectName3'];
+            if (project3Desc) project3Desc.textContent = elements[lang]['projectDesc3'];
+            if (project3Link) project3Link.textContent = elements[lang]['viewDetails'];
+        }
+        
+        // 更新"联系我"部分
+        const contactSection = document.querySelector('.contact-section h2');
+        if (contactSection) contactSection.textContent = elements[lang]['contactMe'];
+        
+        const contactDesc = document.querySelector('.contact-section > div > p');
+        if (contactDesc) contactDesc.textContent = elements[lang]['contactDesc'];
+    }
+
+    // 检测localStorage可用性
+    function isLocalStorageAvailable() {
+        try {
+            const test = 'test';
+            localStorage.setItem(test, test);
+            localStorage.removeItem(test);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    // 安全地获取localStorage值
+    function getLocalStorage(key, defaultValue) {
+        if (isLocalStorageAvailable()) {
+            return localStorage.getItem(key) || defaultValue;
+        }
+        return defaultValue;
+    }
+
+    // 安全地设置localStorage值
+    function setLocalStorage(key, value) {
+        if (isLocalStorageAvailable()) {
+            try {
+                localStorage.setItem(key, value);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    // 安全地清除localStorage
+    function clearLocalStorage() {
+        if (isLocalStorageAvailable()) {
+            try {
+                localStorage.clear();
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    // 初始化阅读进度条
+    function initProgressBar() {
+        const progressBarFill = document.getElementById('progressBarFill');
+        if (progressBarFill) {
+            // 初始更新进度条
+            updateProgressBar();
+            
+            // 添加滚动事件监听器
+            window.addEventListener('scroll', updateProgressBar);
+        }
+    }
+    
+    // 更新阅读进度条
+    function updateProgressBar() {
+        const progressBarFill = document.getElementById('progressBarFill');
+        if (progressBarFill) {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight;
+            const clientHeight = document.documentElement.clientHeight;
+            const scrollPercentage = (scrollTop / (scrollHeight - clientHeight)) * 100;
+            progressBarFill.style.height = scrollPercentage + '%';
+        }
+    }
+
+    // 页面加载时初始化设置
+    window.addEventListener('DOMContentLoaded', () => {
+        // 首先应用预加载的语言设置，避免闪烁
+        if (window.preloadedLanguage && window.preloadedLang) {
+            applyPreloadedLanguage();
+        }
+        
+        // 初始化页面公共功能
+        currentLanguage = initPage();
+        updateLanguage();
+        
+        // 初始化阅读进度条
+        initProgressBar();
+    });
+    
+    // 应用预加载的语言设置
+    function applyPreloadedLanguage() {
+        const lang = window.preloadedLang;
+        const elements = window.preloadedLanguage;
+        
+        if (!elements) return;
+        
+        // 更新欢迎动画标题
+        const textLeft = document.getElementById('textLeft');
+        const textRight = document.getElementById('textRight');
+        if (textLeft) textLeft.textContent = elements['welcomeLeft'];
+        if (textRight) textRight.textContent = elements['welcomeRight'];
+        
+        // 更新导航按钮
+        const navBtn0 = document.querySelector('.nav-btn[data-index="0"]');
+        const navBtn1 = document.querySelector('.nav-btn[data-index="1"]');
+        const navBtn2 = document.querySelector('.nav-btn[data-index="2"]');
+        const navBtn3 = document.querySelector('.nav-btn[data-index="3"]');
+        if (navBtn0) {
+            navBtn0.textContent = elements['about'];
+            navBtn0.title = elements['about'];
+        }
+        if (navBtn1) {
+            navBtn1.textContent = elements['works'];
+            navBtn1.title = elements['works'];
+        }
+        if (navBtn2) {
+            navBtn2.textContent = elements['notes'];
+            navBtn2.title = elements['notes'];
+        }
+        if (navBtn3) {
+            navBtn3.textContent = elements['settings'];
+            navBtn3.title = elements['settings'];
+        }
+        
+        // 更新主页内容区域
+        const profileSection = document.querySelector('.profile-section h2');
+        if (profileSection) profileSection.textContent = elements['aboutMe'];
+        
+        // 更新职业头衔
+        const jobTitle = document.querySelector('.profile-section p');
+        if (jobTitle) jobTitle.textContent = elements['jobTitle'];
+        
+        // 更新个人简介段落
+        const aboutParagraphs = document.querySelectorAll('.profile-section > div > div:last-child p');
+        if (aboutParagraphs.length >= 2) {
+            aboutParagraphs[0].textContent = elements['aboutDesc1'];
+            aboutParagraphs[1].textContent = elements['aboutDesc2'];
+        }
+        
+        const skillsSection = document.querySelector('.skills-section h2');
+        if (skillsSection) skillsSection.textContent = elements['mySkills'];
+        
+        const skillCards = document.querySelectorAll('.skills-section h3');
+        if (skillCards.length >= 3) {
+            skillCards[0].textContent = elements['frontend'];
+            skillCards[1].textContent = elements['backend'];
+            skillCards[2].textContent = elements['otherSkills'];
+        }
+        
+        const projectsSection = document.querySelector('.projects-section h2');
+        if (projectsSection) projectsSection.textContent = elements['myProjects'];
+        
+        const projectCards = document.querySelectorAll('.projects-section > div > div');
+        if (projectCards.length >= 3) {
+            const project1Title = projectCards[0].querySelector('h3');
+            const project1Desc = projectCards[0].querySelector('p');
+            const project1Link = projectCards[0].querySelector('a');
+            if (project1Title) project1Title.textContent = elements['projectName1'];
+            if (project1Desc) project1Desc.textContent = elements['projectDesc1'];
+            if (project1Link) project1Link.textContent = elements['viewDetails'];
+            
+            const project2Title = projectCards[1].querySelector('h3');
+            const project2Desc = projectCards[1].querySelector('p');
+            const project2Link = projectCards[1].querySelector('a');
+            if (project2Title) project2Title.textContent = elements['projectName2'];
+            if (project2Desc) project2Desc.textContent = elements['projectDesc2'];
+            if (project2Link) project2Link.textContent = elements['viewDetails'];
+            
+            const project3Title = projectCards[2].querySelector('h3');
+            const project3Desc = projectCards[2].querySelector('p');
+            const project3Link = projectCards[2].querySelector('a');
+            if (project3Title) project3Title.textContent = elements['projectName3'];
+            if (project3Desc) project3Desc.textContent = elements['projectDesc3'];
+            if (project3Link) project3Link.textContent = elements['viewDetails'];
+        }
+        
+        const contactSection = document.querySelector('.contact-section h2');
+        if (contactSection) contactSection.textContent = elements['contactMe'];
+        
+        const contactDesc = document.querySelector('.contact-section > div > p');
+        if (contactDesc) contactDesc.textContent = elements['contactDesc'];
+    }
+    
+    // 覆盖公共函数，在主页下初始化导航指示器到logo下方
+    function updateNavIndicator() {
+        // 使用setTimeout确保DOM已经渲染完成并应用了所有样式
+        setTimeout(() => {
+            const logo = document.getElementById('logo');
+            const navLinks = document.querySelector('.nav-links');
+            const indicator = document.getElementById('navIndicator');
+            
+            if (logo && navLinks && indicator) {
+                // 在主页上，导航指示器定位到logo下方
+                // 计算logo相对于nav-links的偏移量
+                const logoRect = logo.getBoundingClientRect();
+                const navLinksRect = navLinks.getBoundingClientRect();
+                const relativeLeft = logoRect.left - navLinksRect.left;
+                indicator.style.left = relativeLeft + "px";
+                indicator.style.width = logoRect.width + "px";
+            }
+        }, 100);
+    }
+
+    // 复制邮箱功能
+
+</script>
+</body>
+</html>
