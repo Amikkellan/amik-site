@@ -537,31 +537,10 @@ function initNavIndicator() {
                 const targetLeft = btn.offsetLeft;
                 const targetWidth = btn.offsetWidth;
                 
-                // 根据方向设置不同的动画效果
-                if (isRightToLeft) {
-                    // 从右向左切换：先移动到目标位置，再调整宽度
-                    indicator.style.transition = 'left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
-                    indicator.style.left = targetLeft + "px";
-                    
-                    setTimeout(() => {
-                        indicator.style.transition = 'width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
-                        indicator.style.width = targetWidth + "px";
-                    }, 200);
-                } else {
-                    // 从左向右切换：先调整宽度，再移动到目标位置
-                    indicator.style.transition = 'width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
-                    indicator.style.width = (targetLeft + targetWidth - currentLeft) + "px";
-                    
-                    setTimeout(() => {
-                        indicator.style.transition = 'left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
-                        indicator.style.left = targetLeft + "px";
-                    }, 200);
-                }
-                
-                // 重置过渡效果
-                setTimeout(() => {
-                    indicator.style.transition = 'all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
-                }, 400);
+                // 简化动画逻辑，使用同时动画 left 和 width
+                indicator.style.transition = 'all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
+                indicator.style.left = targetLeft + "px";
+                indicator.style.width = targetWidth + "px";
                 
                 // 更新当前激活的索引
                 currentActiveIndex = index;
