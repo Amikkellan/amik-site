@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>设置 - Amik.cc.cd</title>
+
+    <script src="../js/common.js"></script>
+    <script>
+        // 立即初始化主题和语言，避免页面闪烁
+        (function() {
+            // 检测localStorage可用性
+            function isLocalStorageAvailable() {
+                try {
+                    const test = 'test';
+                    localStorage.setItem(test, test);
+                    localStorage.removeItem(test);
+                    return true;
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            // 安全地获取localStorage值
+            function getLocalStorage(key, defaultValue) {
+                if (isLocalStorageAvailable()) {
+                    return localStorage.getItem(key) || defaultValue;
+                }
+                return defaultValue;
+            }
+
+            // 应用主题设置
+            function applyTheme() {
+                const savedTheme = getLocalStorage('theme', 'light');
+                let isDark = false;
+                
+                if (savedTheme === 'light') {
+                    document.documentElement.dataset.theme = 'light';
+                } else if (savedTheme === 'dark') {
+                    document.documentElement.dataset.theme = 'dark';
+                    isDark = true;
+                } else if (savedTheme === 'system') {
+                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    document.documentElement.dataset.theme = prefersDark ? 'dark' : 'light';
+                    isDark = prefersDark;
+                }
+                
+                // 设置主题图标状态
+                document.documentElement.style.setProperty('--theme-icon', isDark ? 'dark' : 'light');
+            }
+
+            // 应用语言设置
+            function applyLanguage() {
+                const savedLanguage = getLocalStorage('language', 'zh-CN');
+                // 这里只设置语言，具体的语言更新由initPage()处理
+            }
+
+            // 应用字体大小设置
+            function applyFontSize() {
+                const savedFontSize = getLocalStorage('fontSize', '16');
+                document.documentElement.style.fontSize = savedFontSize + 'px';
+            }
+
+            // 应用底边栏状态设置
+            function applyFooterState() {
+                // 检查底部栏默认展开设置和当前状态
+                const footerDefault = getLocalStorage('footerDefault', 'true') === 'true';
+                const savedFooterVisible = getLocalStorage('footerVisible', footerDefault ? 'true' : 'false') === 'true';
+                
+                // 这里只设置CSS变量，具体的DOM操作由initFooterState()处理
+                // 这样可以在页面渲染前设置好基础样式
+                document.documentElement.style.setProperty('--footer-visible', savedFooterVisible ? 'true' : 'false');
+            }
+
+            // 立即应用主题、语言、字体大小和底边栏状态
+            applyTheme();
+            applyLanguage();
+            applyFontSize();
+            applyFooterState();
+        })();
+    </script>
+    <link rel="stylesheet" href="../css/style.css">
+
+</head>
+<body>
+
+<div class="theme-mask" id="themeMask"></div>
+
+<!-- 底部控制按钮：箭头单独包裹，只转箭头不转按钮 -->
+<button class="footer-toggle" id="footerToggle" title="Shift+左键回顶部，Alt+左键回底部，左键单击展开收起底边栏">
+    <span class="toggle-arrow" id="toggleArrow">↑</span>
+</button>
+
+<div class="navbar" id="navbar">
+    <div class="logo" id="logo" onclick="location.href='../index.html'" title="单击返回主页">
+        <span class="logo-main">Amik</span>
+        <span class="logo-suffix">.cc.cd</span>
+    </div>
+    <div class="nav-links">
+        <button class="nav-btn" onclick="location.href='../about/index.html'" title="关于我们">关于</button>
+        <button class="nav-btn" onclick="location.href='../works/index.html'" title="查看作品">作品</button>
+        <button class="nav-btn" onclick="location.href='../notes/index.html'" title="阅读笔记">笔记</button>
+        <button class="nav-btn active" onclick="location.href='../setting/index.html'" title="设置">设置</button>
+        <div class="nav-indicator" id="navIndicator"></div>
+    </div>
+</div>
+
+<!-- 语言切换按钮 -->
+<div class="language-toggle" id="languageToggle" title="切换语言">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+    </svg>
+</div>
+
+<div class="theme-toggle" id="themeToggle" title="切换深浅"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="theme-icon"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg></div>
+
+<!-- 内容区域 -->
+<div class="content" style="opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease;">
+    <h1>设置</h1>
+    
+    <div class="content-section" id="theme-section" style="opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease;">
+        <h2 onclick="scrollToSection('theme-section')">主题</h2>
+        <div class="setting-item" style="cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease;">
+            <label style="width: 100%; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                <span class="setting-label-text">明亮模式</span>
+                <input type="radio" name="theme" value="light">
+            </label>
+        </div>
+        <div class="setting-item" style="cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease;">
+            <label style="width: 100%; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                <span class="setting-label-text">暗黑模式</span>
+                <input type="radio" name="theme" value="dark">
+            </label>
+        </div>
+        <div class="setting-item" style="cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease;">
+            <label style="width: 100%; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                <span class="setting-label-text">跟随系统</span>
+                <input type="radio" name="theme" value="system">
+            </label>
+        </div>
+    </div>
+    
+    <div class="content-section" id="display-section" style="opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease;">
+        <h2 onclick="scrollToSection('display-section')">显示</h2>
+        <div class="setting-item" style="opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease;">
+            <label>字体大小</label>
+            <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+                <span class="setting-value" id="fontSizeValue">16px</span>
+                <input type="range" min="10" max="25" value="16" class="slider" id="fontSizeSlider">
+            </div>
+        </div>
+    </div>
+    
+    <div class="content-section" id="language-section" style="opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease;">
+        <h2 onclick="scrollToSection('language-section')">语言</h2>
+        <div class="setting-item" style="cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease;">
+            <label style="width: 100%; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                <span class="setting-label-text">简体中文</span>
+                <input type="radio" name="language" value="zh-CN">
+            </label>
+        </div>
+        <div class="setting-item" style="cursor: pointer; opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease;">
+            <label style="width: 100%; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                <span class="setting-label-text">English</span>
+                <input type="radio" name="language" value="en-US">
+            </label>
+        </div>
+    </div>
+    
+    <div class="content-section" id="other-section" style="opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease;">
+        <h2 onclick="scrollToSection('other-section')">其他</h2>
+
+        <div class="setting-item" style="opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease;">
+            <button class="setting-btn" id="clearCache">清除缓存</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 页面加载完成后显示内容区域
+    window.addEventListener('DOMContentLoaded', () => {
+        const content = document.querySelector('.content');
+        if (content) {
+            content.style.opacity = '1';
+            content.style.transform = 'translateY(0)';
+        }
+        
+        const contentSections = document.querySelectorAll('.content-section');
+        contentSections.forEach((section) => {
+            section.style.opacity = '1';
+            section.style.transform = 'translateY(0)';
+        });
+        
+        const settingItems = document.querySelectorAll('.setting-item');
+        settingItems.forEach((item) => {
+            item.style.opacity = '1';
+            item.style.transform = 'translateY(0)';
+        });
+    });
+</script>
+
+<div class="footer" id="footer">
+    <div class="social-item" id="socialItem">
+        <a href="mailto:AmikKellan@gmail.com" class="social-btn" title="发送邮件">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+            </svg>
+        </a>
+    </div>
+    <div class="social-item" id="socialItem">
+        <a href="https://github.com/Amikkellan" target="_blank" rel="noopener noreferrer" class="social-btn" title="访问GitHub">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+        </a>
+    </div>
+</div>
+
+<script>
+    // 滚动到指定区域
+    function scrollToSection(sectionId) {
+        const section = document.getElementById(sectionId);
+        if (section) {
+            smoothScrollTo(section.offsetTop - 100);
+        }
+    }
+
+    // 语言切换功能
+    let currentLanguage = getLocalStorage('language', 'zh-CN');
+
+
+
+    // 更新语言
+    function updateLanguage(lang) {
+        // 如果没有传递语言参数，使用当前语言
+        if (!lang) {
+            lang = currentLanguage;
+        } else {
+            // 更新全局变量
+            currentLanguage = lang;
+        }
+        
+        const elements = {
+            'zh-CN': {
+                'about': '关于',
+                'works': '作品',
+                'notes': '笔记',
+                'settings': '设置',
+                'theme': '主题',
+                'light': '明亮模式',
+                'dark': '暗黑模式',
+                'system': '跟随系统',
+                'display': '显示',
+                'fontSize': '字体大小',
+
+                'loadingAnimation': '加载动画',
+                'buttonEffects': '按钮滚动效果',
+                'interaction': '交互',
+                'smoothScroll': '平滑滚动',
+                'touchFeedback': '触摸反馈',
+                'language': '语言',
+                'chinese': '简体中文',
+                'english': 'English',
+                'other': '其他',
+                'clearCache': '清除缓存',
+                'aboutSite': '关于网站',
+                'copyEmail': '点击以复制',
+                'footerToggle': 'Shift+左键回顶部，Alt+左键回底部，左键单击展开收起底边栏',
+                'themeToggle': '切换深浅',
+                'languageToggle': '切换语言',
+                'logo': '单击返回主页'
+            },
+            'en-US': {
+                'about': 'About',
+                'works': 'Works',
+                'notes': 'Notes',
+                'settings': 'Settings',
+                'theme': 'Theme',
+                'light': 'Light Mode',
+                'dark': 'Dark Mode',
+                'system': 'Follow System',
+                'display': 'Display',
+                'fontSize': 'Font Size',
+
+                'loadingAnimation': 'Loading Animation',
+                'buttonEffects': 'Button Scroll Effects',
+                'interaction': 'Interaction',
+                'smoothScroll': 'Smooth Scrolling',
+                'touchFeedback': 'Touch Feedback',
+                'language': 'Language',
+                'chinese': 'Simplified Chinese',
+                'english': 'English',
+                'other': 'Other',
+                'clearCache': 'Clear Cache',
+                'aboutSite': 'About Site',
+                'copyEmail': 'Click to copy',
+                'footerToggle': 'Shift+Left Click to top, Alt+Left Click to bottom, Left Click to toggle footer',
+                'themeToggle': 'Toggle theme',
+                'languageToggle': 'Toggle language',
+                'logo': 'Click to return to home page'
+            }
+        };
+
+        // 更新页面标题
+        document.title = elements[lang]['settings'] + ' - Amik.cc.cd';
+
+        // 使用通用函数更新导航按钮
+        updateNavButtons(lang, elements);
+
+        // 更新其他提示文本
+        document.getElementById('logo').title = elements[lang]['logo'];
+        document.getElementById('footerToggle').title = elements[lang]['footerToggle'];
+        document.getElementById('themeToggle').title = elements[lang]['themeToggle'];
+        document.getElementById('languageToggle').title = elements[lang]['languageToggle'];
+
+        // 更新内容
+        document.querySelector('.content h1').textContent = elements[lang]['settings'];
+        document.querySelectorAll('.content-section h2')[0].textContent = elements[lang]['theme'];
+        document.querySelectorAll('.setting-label-text')[0].textContent = elements[lang]['light'];
+        document.querySelectorAll('.setting-label-text')[1].textContent = elements[lang]['dark'];
+        document.querySelectorAll('.setting-label-text')[2].textContent = elements[lang]['system'];
+        document.querySelectorAll('.content-section h2')[1].textContent = elements[lang]['display'];
+        document.querySelectorAll('.setting-item label')[3].textContent = elements[lang]['fontSize'];
+        document.querySelectorAll('.content-section h2')[2].textContent = elements[lang]['language'];
+        // 简体中文选项保持显示为"简体中文"，不被翻译
+        document.querySelectorAll('.setting-label-text')[3].textContent = '简体中文';
+        document.querySelectorAll('.setting-label-text')[4].textContent = elements[lang]['english'];
+        document.querySelectorAll('.content-section h2')[3].textContent = elements[lang]['other'];
+
+        document.getElementById('clearCache').textContent = elements[lang]['clearCache'];
+        
+        // 更新导航指示器位置和宽度
+        setTimeout(() => {
+            if (typeof updateNavIndicator === 'function') {
+                updateNavIndicator();
+            }
+        }, 100);
+    }
+
+    // 显示通知
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.style.position = 'fixed';
+        notification.style.top = '60px'; // 导航栏高度
+        notification.style.left = '50%';
+        notification.style.transform = 'translate(-50%, -100%)';
+        notification.style.background = 'rgba(0, 0, 0, 0.8)';
+        notification.style.color = 'white';
+        notification.style.padding = '10px 20px';
+        notification.style.borderRadius = '4px';
+        notification.style.fontSize = '14px';
+        notification.style.zIndex = '9999';
+        notification.style.transition = 'all 0.3s ease';
+        notification.style.opacity = '0';
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        // 从导航栏底下移动下来并渐入显示
+        setTimeout(() => {
+            notification.style.opacity = '1';
+            notification.style.transform = 'translate(-50%, 20px)';
+        }, 10);
+        
+        // 2秒后移动回导航栏方向并淡化退场
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            notification.style.transform = 'translate(-50%, -100%)';
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 2000);
+    }
+
+    // 显示确认通知
+    function showConfirmNotification(message, onConfirm) {
+        const notification = document.createElement('div');
+        notification.className = 'confirm-modal';
+        
+        // 根据当前语言设置按钮文本
+        const cancelText = currentLanguage === 'zh-CN' ? '取消' : 'Cancel';
+        const confirmText = currentLanguage === 'zh-CN' ? '确认' : 'Confirm';
+        
+        notification.innerHTML = `
+            <div class="confirm-content">
+                <div class="confirm-message">${message}</div>
+                <div class="confirm-buttons">
+                    <button class="confirm-btn cancel">${cancelText}</button>
+                    <button class="confirm-btn confirm">${confirmText}</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(notification);
+        
+        // 触发动画
+        setTimeout(() => {
+            notification.classList.add('visible');
+        }, 10);
+        
+        const confirmBtn = notification.querySelector('.confirm-btn.confirm');
+        const cancelBtn = notification.querySelector('.confirm-btn.cancel');
+        
+        confirmBtn.addEventListener('click', () => {
+            notification.classList.remove('visible');
+            setTimeout(() => {
+                onConfirm();
+                notification.remove();
+            }, 300);
+        });
+        
+        cancelBtn.addEventListener('click', () => {
+            notification.classList.remove('visible');
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        });
+    }
+
+    // 主题设置
+    const themeRadios = document.querySelectorAll('input[name="theme"]');
+    themeRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            const theme = radio.value;
+            const themeToggle = document.getElementById('themeToggle');
+            if (theme === 'light') {
+                document.body.dataset.theme = 'light';
+                document.documentElement.dataset.theme = 'light';
+                if (themeToggle) themeToggle.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="theme-icon"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>';
+            } else if (theme === 'dark') {
+                document.body.dataset.theme = 'dark';
+                document.documentElement.dataset.theme = 'dark';
+                if (themeToggle) themeToggle.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="theme-icon"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7zm1-11h-2v3H8v2h3v3h2v-3h3v-2h-3V8z"/></svg>';
+            } else if (theme === 'system') {
+                // 跟随系统主题
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.body.dataset.theme = prefersDark ? 'dark' : 'light';
+                document.documentElement.dataset.theme = prefersDark ? 'dark' : 'light';
+                if (themeToggle) {
+                    if (prefersDark) {
+                        themeToggle.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="theme-icon"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7zm1-11h-2v3H8v2h3v3h2v-3h3v-2h-3V8z"/></svg>';
+                    } else {
+                        themeToggle.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="theme-icon"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>';
+                    }
+                }
+            }
+            // 保存设置到本地存储
+            setLocalStorage('theme', theme);
+        });
+    });
+
+    // 字体大小设置
+    function initFontSizeSlider() {
+        const fontSizeSlider = document.getElementById('fontSizeSlider');
+        const fontSizeValue = document.getElementById('fontSizeValue');
+        
+        if (fontSizeSlider && fontSizeValue) {
+            // 确保初始值正确显示
+            const initialFontSize = getLocalStorage('fontSize', '16');
+            fontSizeSlider.value = initialFontSize;
+            fontSizeValue.textContent = initialFontSize + 'px';
+            document.documentElement.style.fontSize = initialFontSize + 'px';
+            
+            // 绑定input事件监听器，确保实时更新
+            fontSizeSlider.addEventListener('input', () => {
+                const fontSize = fontSizeSlider.value;
+                document.documentElement.style.fontSize = fontSize + 'px';
+                fontSizeValue.textContent = fontSize + 'px';
+                // 保存设置到本地存储
+                setLocalStorage('fontSize', fontSize);
+                // 更新导航指示器位置和宽度
+                if (typeof updateNavIndicator === 'function') {
+                    updateNavIndicator();
+                }
+            });
+            
+            // 绑定change事件监听器，确保最终值也能更新
+            fontSizeSlider.addEventListener('change', () => {
+                const fontSize = fontSizeSlider.value;
+                document.documentElement.style.fontSize = fontSize + 'px';
+                fontSizeValue.textContent = fontSize + 'px';
+                // 保存设置到本地存储
+                setLocalStorage('fontSize', fontSize);
+                // 更新导航指示器位置和宽度
+                if (typeof updateNavIndicator === 'function') {
+                    updateNavIndicator();
+                }
+            });
+        }
+    }
+
+
+
+    // 语言设置
+    const languageRadios = document.querySelectorAll('input[name="language"]');
+    languageRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            const language = radio.value;
+            currentLanguage = language;
+            setLocalStorage('language', currentLanguage);
+            updateLanguage();
+        });
+    });
+
+    // 为所有设置项添加更改监听器，立即应用设置
+    const allSettingsInputs = document.querySelectorAll('input[type="checkbox"], input[type="radio"], input[type="range"]');
+    allSettingsInputs.forEach(input => {
+        input.addEventListener('change', applySettings);
+    });
+
+    // 应用设置函数
+    function applySettings() {
+        // 应用主题设置
+        const themeRadio = document.querySelector('input[name="theme"]:checked');
+        if (themeRadio) {
+            const selectedTheme = themeRadio.value;
+            const themeToggle = document.getElementById('themeToggle');
+            if (selectedTheme === 'light') {
+                document.documentElement.dataset.theme = 'light';
+                if (themeToggle) themeToggle.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="theme-icon"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>';
+            } else if (selectedTheme === 'dark') {
+                document.documentElement.dataset.theme = 'dark';
+                if (themeToggle) themeToggle.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="theme-icon"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7zm1-11h-2v3H8v2h3v3h2v-3h3v-2h-3V8z"/></svg>';
+            } else if (selectedTheme === 'system') {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.documentElement.dataset.theme = prefersDark ? 'dark' : 'light';
+                if (themeToggle) {
+                    if (prefersDark) {
+                        themeToggle.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="theme-icon"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7zm1-11h-2v3H8v2h3v3h2v-3h3v-2h-3V8z"/></svg>';
+                    } else {
+                        themeToggle.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="theme-icon"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>';
+                    }
+                }
+            }
+            setLocalStorage('theme', selectedTheme);
+        }
+        
+        // 应用字体大小设置
+        const fontSizeSlider = document.getElementById('fontSizeSlider');
+        if (fontSizeSlider) {
+            const fontSize = fontSizeSlider.value;
+            document.documentElement.style.fontSize = fontSize + 'px';
+            const fontSizeValue = document.getElementById('fontSizeValue');
+            if (fontSizeValue) {
+                fontSizeValue.textContent = fontSize + 'px';
+            }
+            setLocalStorage('fontSize', fontSize);
+        }
+    }
+
+    // 清除缓存
+    document.getElementById('clearCache').addEventListener('click', () => {
+        const confirmMessage = currentLanguage === 'zh-CN' ? '确定要清除所有缓存吗？' : 'Are you sure you want to clear all cache?';
+        const successMessage = currentLanguage === 'zh-CN' ? '缓存已清除，刷新页面生效' : 'Cache cleared, refresh page to take effect';
+        const errorMessage = currentLanguage === 'zh-CN' ? '清除缓存失败' : 'Failed to clear cache';
+        
+        showConfirmNotification(confirmMessage, () => {
+            try {
+                localStorage.clear();
+                showNotification(successMessage);
+            } catch (e) {
+                showNotification(errorMessage, 'error');
+                console.error('Error clearing cache:', e);
+            }
+        });
+    });
+
+
+
+    // 初始化函数
+    function init() {
+        // 初始化字体大小
+        initFontSizeSlider();
+        
+        // 初始化主题
+        const savedTheme = getLocalStorage('theme', 'light');
+        const themeRadio = document.querySelector(`input[name="theme"][value="${savedTheme}"]`);
+        if (themeRadio) {
+            themeRadio.checked = true;
+            // 触发change事件以应用主题
+            const event = new Event('change');
+            themeRadio.dispatchEvent(event);
+        }
+        
+        // 初始化语言
+        const savedLanguage = getLocalStorage('language', 'zh-CN');
+        const languageRadio = document.querySelector(`input[name="language"][value="${savedLanguage}"]`);
+        if (languageRadio) {
+            languageRadio.checked = true;
+            currentLanguage = savedLanguage;
+            updateLanguage();
+        }
+    }
+
+    // 页面加载完成后初始化
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            // 先调用公共初始化函数
+            initPage();
+            // 再调用页面特定初始化函数
+            init();
+        });
+    } else {
+        // 先调用公共初始化函数
+        initPage();
+        // 再调用页面特定初始化函数
+        init();
+    }
+</script>
+</body>
+</html>
